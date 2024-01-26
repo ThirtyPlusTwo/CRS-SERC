@@ -1,8 +1,6 @@
-# CRS - Cratera's Racing System (for Space Engineers)
+# CRS-F1 - Cratera's Racing System (for Space Engineers)
 
 ### Version 12.5.0
-
-This is the standard script that all cars racing on FSE should be using on Season 12 and it features:
 - Pit Limiter
 - Drag Reduction System (DRS)
 - Energy Recovery System (ERS)
@@ -66,7 +64,7 @@ In order to change wheels, you have to go to the pits, with the Pit Limiter acti
 
 ## FAQ
 - **How does the DRS works?**
-  - It sets the strength of all your suspensions to 100% while active, which allows your car to reach 100m/s. But be careful, it might only be good to use on long straights, also bumpy surfaces might put your car in the air while DRS is active. It's now allowed on FSE1 cars only.
+  - It sets the strength of all your suspensions to 100% while active, which allows your car to reach 100m/s. But be careful, it might only be good to use on long straights, also bumpy surfaces might put your car in the air while DRS is active.
   
 - **How does the ERS works?**
   - It sets the power of all your suspensions to 100% and overclocks it while active, which gives more acceleration to your car consuming the ERS charge. When deactivated, it will recharge the ERS while moving.
@@ -74,7 +72,7 @@ In order to change wheels, you have to go to the pits, with the Pit Limiter acti
 - **How does the Drafting System works?**
   - When you're behind another car (detected by the Drafting Sensor) and it is above 70m/s, your car starts to draft: your suspensions gets 100% wheel power and your speed limit is set to unlimited. It remains active for a little while after moving for the overtake.
   
-- **Do I need to setup FSESS script on my car to be detected by the race control script?"**
+- **Do I need to setup CRS-F1 script on my car to be detected by the race control script?"**
   - No, once you cross the start line you are already being tracked. But in order to see your onboard race data, using commands and having the tyre degradation effect on your car, you need to setup this script on your car.
   
 - **Is there anyway to stop the tyre degradation?**
