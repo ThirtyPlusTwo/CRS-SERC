@@ -1,6 +1,6 @@
 # CRS-F1 - Cratera's Racing System (for Space Engineers)
 
-### Version 12.5.0
+### Version 13.0.0
 - Pit Limiter
 - Drag Reduction System (DRS)
 - Energy Recovery System (ERS)
@@ -17,19 +17,18 @@
 1. Place a Programmable Block on your car;
 2. Place a Light Panel or a Transparent LCD at the back of your car, then create a group with it called "Brakelight";
 3. Place a Sensor below the tip of your car (facing down, the top of the sensor should be pointing forward the car), then name it "Drafting Sensor";
-4. Name each suspension according to its position, putting: "FR", "FL", "RR", "RL" in their names;
-5. Optionally, if your programmable block is not visible from the cockpit, you can place an LCD to show onboard information, name it "Driver LCD";
-6. You can, also optionally, place two sensors at the back of the rear suspensions naming accordingly "Mirror Sensor Right" and "Mirror Sensor Left";
-7. Open the Control Panel, look for your Programmable Block, click on the "Edit" button, then copy and paste the script;
-8. Make sure to set the following variables according to your needs:
+4. Optionally, if your programmable block is not visible from the cockpit, you can place an LCD to show onboard information, name it "Driver LCD";
+5. You can, also optionally, place two sensors at the back of the rear suspensions naming accordingly "Mirror Sensor Right" and "Mirror Sensor Left";
+6. Open the Control Panel, look for your Programmable Block, click on the "Edit" button, then copy and paste the script;
+7. Make sure to set the following variables according to your needs:
    - TEAM_TAG => 3 Letters that represent your team, if you're not in a team it's going to be "XXX"
    - DRIVER_NAME => Replace "Guest" with "Your Name"
    - DRIVER_NUMBER => Set a number of your preference from 0 to 99, make sure no other driver uses it.
    - DEFAULT_SUSPENSION_STRENGTH => Set the strength percentage you use on your car suspensions, remember to put an "f" at the end of the number, e.g.: 6.32f;
-9. If you want to see onboard race information (Current Lap, Position, Lap Time, Tyre Wear), you must have an Antenna on your car. 
-10. Once you have set the values, click on the "Check Code" button. A success message should pop-up (if not, repeat the previous steps);
-11. After closing the pop-up, click on "OK" in the Editor;
-12. Set up the arguments to the Programmable Block on your car's hotbar, so you can execute commands for your cockpit, then you're ready to race.
+8. If you want to see onboard race information (Current Lap, Position, Lap Time, Tyre Wear), you must have an Antenna on your car. 
+9. Once you have set the values, click on the "Check Code" button. A success message should pop-up (if not, repeat the previous steps);
+10. After closing the pop-up, click on "OK" in the Editor;
+11. Set up the arguments to the Programmable Block on your car's hotbar, so you can execute commands for your cockpit, then you're ready to race.
 
 **Note: After setting this up, your grid name will change to the standardized name "TEAM_TAG #DRIVER_NUMBER-DRIVER_NAME", e.g.: "CPS #21-Cratera".**
 
