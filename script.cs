@@ -1,4 +1,4 @@
-﻿private readonly string TEAM_TAG = "XXX";                               //Your Team Tag (3 chracters), if you are not in a team yet, keep this as it is.
+private readonly string TEAM_TAG = "XXX";                               //Your Team Tag (3 chracters), if you are not in a team yet, keep this as it is.
 private readonly string DRIVER_NAME = "Guest";                          //Your name
 private readonly int DRIVER_NUMBER = 99;                                //Your number (0-99)
 private const float DEFAULT_SUSPENSION_STRENGTH_F = 20f;                //Setup your default front suspensions strength
@@ -16,165 +16,1983 @@ private const string TEXT_DISPLAY_NAME = "Text LCD";                    //Option
 private const string RANK_DISPLAY_NAME = "Rank LCD";                    //Optional Text-Based LCD, for HudLcd Plugin
 private const string TEXT_DISPLAY_HUDLCD = "hudlcd:-0.7:-0.35:0.9:White:1";
 private const string RANK_DISPLAY_HUDLCD = "hudlcd:0.45:0.9:1:White:1";
+    
+//************ DO NOT MODIFY BELLOW HERE ************
 
-string ţ="12.5.0";const int Ţ=3000;const int š=1000;const int Ť=1000;const float ť=80f;const float ż=95f;char Ž='\u25BC'
-;char Ż='\u25B2';char ź='\u25BA';char Ź='\u25C4';const char Ÿ='\u2588';const char ŷ='\u2592';const char Ŷ='\u2591';const
-float ŵ=1.7f;bool Ŵ;IMyMotorSuspension[]ų;IMyShipController Ų;List<IMyTextSurface>ű;IMyTextSurface Ű;IMyTextSurface ů;
-IMyTextSurface Ů;IMyRadioAntenna ŭ;IMySensorBlock Ŭ;IMySensorBlock ū;IMySensorBlock Ū;List<IMyGyro>ũ;bool Ũ;bool ŧ;bool Ŧ;
-StringBuilder ş;ď ŉ;List<IMyLightingBlock>ŝ;List<IMyLightingBlock>Ň;List<IMyLightingBlock>ņ;List<IMyLightingBlock>Ņ;Ħ ń;long Ń=-1;
-IMyBroadcastListener ł;int Ł;int ŀ;DateTime Ŀ;float ň;float ľ=1f;bool Ľ=false;int ļ;bool Ļ;List<MyDetectedEntityInfo>ĺ;List<
-MyDetectedEntityInfo>Ĺ;X ĸ;Program(){ŉ=new ď();ĸ=new X(new char[]{'-','\\','|','/'},150);try{Ɓ();ƌ();ƕ();Ɣ();Ǝ();É();Ê();Í();ķ();º();ß();Ã()
-;Á();}catch(Exception ex){Ŵ=true;Echo(ex.Message);return;}Runtime.UpdateFrequency=UpdateFrequency.Update1;Ŀ=DateTime.Now;
-}void ķ(){ĺ=new List<MyDetectedEntityInfo>();ū=(IMySensorBlock)GridTerminalSystem.GetBlockWithName(
-MIRROR_SENSOR_RIGHT_NAME);if(ū!=null){ū.DetectSmallShips=true;ū.DetectLargeShips=false;ū.DetectPlayers=false;ū.LeftExtend=12.5f;ū.RightExtend=
-0.5f;ū.FrontExtend=50;ū.BackExtend=5;ū.TopExtend=5;ū.BottomExtend=5;}Ū=(IMySensorBlock)GridTerminalSystem.GetBlockWithName(
-MIRROR_SENSOR_LEFT_NAME);if(Ū!=null){Ū.DetectSmallShips=true;Ū.DetectLargeShips=false;Ū.DetectPlayers=false;Ū.LeftExtend=0.5f;Ū.RightExtend=
-12.5f;Ū.FrontExtend=50;Ū.BackExtend=5;Ū.TopExtend=5;Ū.BottomExtend=5;}}void Save(){}void Main(string Ü,UpdateType Ŋ){if(Ŵ){
-return;}var Ş=DateTime.Now;ň=(float)(Ş-Ŀ).TotalMilliseconds/1000;Echo($"Running FSESS {ţ}");Ý(Ü);Ʊ();Ƌ();ś();Ʋ();Ƅ();Ɔ();Ř();Ŕ
-();ƅ();Ŝ();Ŀ=Ş;}void Ŝ(){if(!Ļ){return;}if(Vector3D.Dot(Ų.GetNaturalGravity(),Ų.WorldMatrix.Up)>0){for(int J=0;J<ũ.Count;
-J++){ũ[J].GyroOverride=true;}return;}if(ũ[0].GyroOverride){for(int J=0;J<ũ.Count;J++){ũ[J].GyroOverride=false;}Ļ=false;}}
-void ś(){switch(ŉ.Ķ){case ę.ė:Ś();break;case ę.Ė:ř();break;default:if(!Ũ){Ų.HandBrake=false;Ö(ż);}break;}}void Ś(){ŧ=false;Ŧ
-=false;Ų.HandBrake=Ų.GetShipSpeed()>50;Ö(50f);}void ř(){ŧ=false;Ŧ=false;Ũ=false;Ų.HandBrake=true;}void Ř(){var ŗ=IGC.
-UnicastListener;if(!ŗ.HasPendingMessage){Ł-=(int)(ň*1000);if(ł.HasPendingMessage&&Ł<=0){var Ŗ=ł.AcceptMessage();if(Ŗ.Tag=="Address"){Ń=
-Convert.ToInt64(Ŗ.Data.ToString());IGC.SendUnicastMessage(Ń,"Register",$"{Me.CubeGrid.CustomName};{IGC.Me}");}}return;}while(ŗ.
-HasPendingMessage){var ŕ=ŗ.AcceptMessage();if(ŕ.Tag=="RaceData"){ŉ.Ĭ(ŕ.Data.ToString());}if(ŕ.Tag=="Argument"){Ý(ŕ.Data.ToString());}}Ł=Ţ
-;}void Ŕ(){ş.Clear();const int œ=21;const int Œ=8;const int ő=œ-6;var Ő=new char[œ,Œ];var æ=Ų.GetShipSpeed();var ŏ=ń.Ĥ;
-var Ŏ=$"{Math.Floor(æ)}m/s";var R=Q('E',8,ľ,1);var ō=Q(ŏ,8,ń.ã,100);var Ō=ŉ.Ĵ==ù.Ì?"<CLEAR>":"<RAIN>";var Š=ŉ.ĳ<100?
-$"RoR:{ŉ.ĳ,2}%":$"RoR:{ŉ.ĳ,3}";var ŋ=ŉ.Ĳ<=0?$"{Ō} {Š.PadLeft(ő-1-Ō.Length)}":$" <RAIN IN {ŉ.Ĳ,2}s> ";var ž=(ŧ?"DRS":"   ")+" "+(Ŧ?"ERS"
-:"   ")+" "+(Ľ?"DFT":"   ")+" "+(Ũ?"PIT":"   ");var Ƭ=g(true);var ƪ=g(false);var Ʃ=ƪ.PadRight((int)Math.Ceiling((float)ő/
-2)-(int)Math.Ceiling((float)Ŏ.Length/2))+Ŏ+Ƭ.PadLeft((int)Math.Floor((float)ő/2)-(int)Math.Floor((float)Ŏ.Length/2));ĸ.í(
-ň);var ƨ=$"S1{a(ŉ.İ)}";var Ƨ=$"S2{a(ŉ.į)}";var Ʀ=$"S3{a(ŉ.Į)}";var ƥ=new string[]{$"   {Ʃ}   ",$"   {ž}   ",
-$"   P:{ŉ.Ď:00}/{ŉ.č:00} L:{(ŉ.Č):00}/{ŉ.Ğ:00}   ",$"   TIME: {ŉ.Ġ}   ",$"   BEST: {ŉ.ĵ}   ",$"   PREV: {ŉ.ĭ}   ",$"                     ",$"   {ŋ}   ",(Ł<=0)?
-$"    NO CONNECTION    ":$"                     "};for(int J=0;J<ƥ.Length;J++){ş.AppendLine(ƥ[J]);}var Ƥ=ş.ToString();foreach(var Ƒ in ű){var ƣ=
-Ƒ.DrawFrame();var Ƣ=Color.Black;var ơ=DEFAULT_FONT_COLOR;switch(ŉ.Ķ){case ę.ė:Ƣ=Color.Yellow;ơ=Color.Black;break;case ę.Ė
-:Ƣ=Color.Red;ơ=Color.White;break;case ę.ĕ:Ƣ=Color.Blue;ơ=Color.White;break;}Ƒ.BackgroundColor=Ƣ;Ƒ.ScriptBackgroundColor=Ƣ
-;Ƒ.FontColor=ơ;var Ơ=Ƒ.SurfaceSize.X/256;var Ɵ=Ơ*0.6f;var ƞ=MySprite.CreateText(Ƥ,"Monospace",ơ,Ɵ);ƞ.Position=new Vector2
-(128*Ơ,18*Ơ);ƣ.Add(ƞ);var Ɲ=MathHelper.Clamp(Math.Round(æ/(100f/15)),0,100);for(int J=0;J<Ɲ;J++){var Ɯ=8f*Ơ;var ƛ=2f*Ơ;
-var ƚ=(Ƒ.SurfaceSize.X/2)-((15f*Ɯ+14f*ƛ)/2)+Ɯ/2;var K=new Vector2(ƚ+(Ɯ+ƛ)*J,Ɯ+ƛ);var ƫ=new Vector2(Ɯ);var ƭ=MySprite.
-CreateSprite("Circle",K,ƫ);if(J<5){ƭ.Color=Color.Lime;}else if(J<10){ƭ.Color=Color.Red;}else{ƭ.Color=Color.Blue;}ƣ.Add(ƭ);}var ǀ=
-MySprite.CreateSprite("Circle",new Vector2(22,12+8+4),new Vector2(22));ǀ.Color=ń.ô;var ƴ=MySprite.CreateSprite("Circle",new
-Vector2(22,12+8+4),new Vector2(20));ƴ.Color=Color.Black;var ƿ=MySprite.CreateText(ń.Ĥ.ToString(),"DEBUG",Color.White,0.5f*Ơ);ƿ.
-Position=new Vector2(22,12+4);var ƾ=MySprite.CreateSprite("SquareSimple",new Vector2(22,106),new Vector2(18,128));ƾ.Color=new
-Color(32,32,32);var ƽ=ƾ.Size.GetValueOrDefault().Y;var Ƽ=ƽ*(ń.ã/100);var ƻ=MySprite.CreateSprite("SquareSimple",new Vector2(
-22,42+(ƽ-Ƽ/2)),new Vector2(18,Ƽ));ƻ.Color=ń.ô;var ƺ=MySprite.CreateText($"{Math.Floor(ń.ã)}%","DEBUG",Color.White,Ɵ);ƺ.
-Position=new Vector2(22,176);ǀ.Position*=Ơ;ǀ.Size*=Ơ;ƣ.Add(ǀ);ƴ.Position*=Ơ;ƴ.Size*=Ơ;ƣ.Add(ƴ);ƿ.Position*=Ơ;ƿ.Size*=Ơ;ƣ.Add(ƿ);
-ƾ.Position*=Ơ;ƾ.Size*=Ơ;ƣ.Add(ƾ);ƻ.Position*=Ơ;ƻ.Size*=Ơ;ƣ.Add(ƻ);ƺ.Position*=Ơ;ƺ.Size*=Ơ;ƣ.Add(ƺ);ǀ=MySprite.
-CreateSprite("IconEnergy",new Vector2(256-22,12+8+4),new Vector2(24));ǀ.Color=Color.Cyan;ƾ=MySprite.CreateSprite("SquareSimple",new
-Vector2(256-22,106),new Vector2(18,128));ƾ.Color=new Color(32,32,32);ƽ=ƾ.Size.GetValueOrDefault().Y;Ƽ=ƽ*ľ;ƻ=MySprite.
-CreateSprite("SquareSimple",new Vector2(256-22,42+(ƽ-Ƽ/2)),new Vector2(18,Ƽ));ƻ.Color=Color.Cyan;ƺ=MySprite.CreateText(
-$"{Math.Floor(ľ*100)}%","DEBUG",Color.White,Ɵ);ƺ.Position=new Vector2(256-22,176);ǀ.Position*=Ơ;ǀ.Size*=Ơ;ƣ.Add(ǀ);ƾ.Position*=Ơ;ƾ.Size*=Ơ;ƣ.
-Add(ƾ);ƻ.Position*=Ơ;ƻ.Size*=Ơ;ƣ.Add(ƻ);ƺ.Position*=Ơ;ƺ.Size*=Ơ;ƣ.Add(ƺ);var ƹ=MySprite.CreateText($"{ƨ}","Monospace",Z(ŉ.İ
-),0.6f);ƹ.Position=new Vector2(128-64+4+1,128-4-2);var Ƹ=MySprite.CreateText($"{Ƨ}","Monospace",Z(ŉ.į),0.6f);Ƹ.Position=
-new Vector2(128,128-4-2);var Ʒ=MySprite.CreateText($"{Ʀ}","Monospace",Z(ŉ.Į),0.6f);Ʒ.Position=new Vector2(128+64-4-2,128-4-
-2);ƹ.Position*=Ơ;ƹ.Size*=Ơ;ƣ.Add(ƹ);Ƹ.Position*=Ơ;Ƹ.Size*=Ơ;ƣ.Add(Ƹ);Ʒ.Position*=Ơ;Ʒ.Size*=Ơ;ƣ.Add(Ʒ);ƣ.Dispose();}ş.
-Clear();ƥ[6]=$"    {ƨ}  {Ƨ}  {Ʀ}    ";var ƶ=Math.Max(ƥ.Length,Math.Max(ō.Length,R.Length));for(int J=0;J<ƶ;J++){var Ƶ=J<ō.
-Length?ō[J]:"   ";var ƴ=J<ƥ.Length?ƥ[J].Substring(3,15):"               ";var Ƴ=J<R.Length?R[J]:"   ";ş.AppendLine(
-$"{Ƶ}{ƴ}{Ƴ}");}Ƥ=ş.ToString();ů?.WriteText(Ƥ);Ű?.WriteText(Ƥ);if(Ů!=null&&ŉ!=null&&ŉ.ı!=null){Ů.WriteText(ŉ.ı);}}void Ʋ(){if(!Ũ){
-foreach(var Ô in ų){Ô.Power=ť;Ô.SetValueFloat("Speed Limit",ż*3.6f);}return;}foreach(var Ô in ų){Ô.Power=20f;Ô.SetValueFloat(
-"Speed Limit",26f*3.6f);}var æ=Ų.GetShipSpeed();Ų.HandBrake=æ>24;}void Ʊ(){var ư=Ų.MoveIndicator.Z>0||Ų.MoveIndicator.Y>0||Ų.
-HandBrake;if(ư){ŧ=false;}var Ư=B(ī.Ī);var Ʈ=B(ī.ĩ);var ƙ=B(ī.Ĩ);var Ƙ=B(ī.ħ);var ſ=(!ŧ?-150f:150f)*ň;Ư.Strength=MathHelper.Clamp(
-Ư.Strength+ſ,DEFAULT_SUSPENSION_STRENGTH_F,100);Ʈ.Strength=MathHelper.Clamp(Ʈ.Strength+ſ,DEFAULT_SUSPENSION_STRENGTH_F,
-100);ƙ.Strength=MathHelper.Clamp(ƙ.Strength+ſ,DEFAULT_SUSPENSION_STRENGTH_R,100);Ƙ.Strength=MathHelper.Clamp(Ƙ.Strength+ſ,
-DEFAULT_SUSPENSION_STRENGTH_R,100);foreach(var Å in ņ){Å.Color=ŧ?Color.Blue:Color.Black;Å.Enabled=ŧ;}}void Ƌ(){if(Ũ){Ŧ=false;}var Ɗ=Ų.MoveIndicator.Z
-<0;var æ=Ų.GetShipSpeed();const float Ɖ=1f/135;const float ƈ=1f/45;if(æ>=1){if(!Ŧ||(Ŧ&&!Ɗ)){var H=(float)MathHelper.Clamp
-(æ/ż,0f,1f);ľ+=Ɖ*H*ň;}else{var H=1;ľ-=ƈ*H*ň;}}ľ=MathHelper.Clamp(ľ,0,1);if(ľ<=0){Ŧ=false;}foreach(var Ô in ų){Ô.Power=D()
-;}var Ƃ=C();Ö(Ƃ);var Ƈ=Ŧ&&Ɗ?ŵ:0;t(Ƈ);foreach(var Å in Ň){Å.Color=Ŧ?Color.Cyan:Color.Black;}}void Ɔ(){ń.í(Ų,ų,ŝ,Ņ,ŉ,ň);Ó()
-;}void ƅ(){if(ŭ==null){return;}ŭ.HudText=$"P{ŉ.Ď}";}void Ƅ(){Ĺ.Clear();if(Ŭ==null||Ŭ.Closed){Ľ=false;return;}Ŭ.
-DetectedEntities(Ĺ);var ƃ=Ĺ.Any(h=>!h.IsEmpty()&&h.Type==MyDetectedEntityType.SmallGrid&&!h.Name.Contains("Grid")&&h.Velocity.Length()>=
-70);if(ƃ){ļ=Ť;}if(Ũ){ļ=0;}Ľ=ļ>0;foreach(var Ô in ų){Ô.Power=D();var Ƃ=C();Ô.SetValueFloat("Speed Limit",Ƃ*3.6f);}ļ-=(int)(
-ň*1000);}void Ɓ(){if(DRIVER_NUMBER<=0&&DRIVER_NUMBER>99){throw new Exception("DRIVER_NUMBER should be between 1 and 99");
-}var ƀ=TEAM_TAG;if(TEAM_TAG==string.Empty){ƀ="XXX";}ƀ=ƀ.Trim().Substring(0,3).ToUpper();Me.CubeGrid.CustomName=
-$"{ƀ} #{DRIVER_NUMBER:00}-{DRIVER_NAME.Trim()}";}void ƌ(){var ƍ=new List<IMyShipController>();GridTerminalSystem.GetBlocksOfType(ƍ);var Ɨ=ƍ.FirstOrDefault(Ɩ=>Ɩ is
-IMyRemoteControl)??ƍ.FirstOrDefault(Ɩ=>Ɩ is IMyCockpit);if(Ɨ==null){throw new Exception("No cockpit or remote control!");}Ų=Ɨ;}void ƕ(){
-var ë=new List<IMyMotorSuspension>();GridTerminalSystem.GetBlocksOfType(ë,Ô=>Ô.CubeGrid==Me.CubeGrid);if(ë==null||ë.Count!=
-4){throw new Exception("Need 4 suspensions!");}var q=ë.FirstOrDefault(Ô=>Ô.CustomName.Contains("FL"));if(q==null)throw
-new Exception("FL suspension not found.");var p=ë.FirstOrDefault(Ô=>Ô.CustomName.Contains("FR"));if(p==null)throw new
-Exception("FR suspension not found.");var o=ë.FirstOrDefault(Ô=>Ô.CustomName.Contains("RL"));if(o==null)throw new Exception(
-"RL suspension not found.");var n=ë.FirstOrDefault(Ô=>Ô.CustomName.Contains("RR"));if(n==null)throw new Exception("RR suspension not found.");ų=
-new IMyMotorSuspension[4];A(ī.ĩ,q);A(ī.Ī,p);A(ī.ħ,o);A(ī.Ĩ,n);}void Ɣ(){ş=new StringBuilder();ű=new List<IMyTextSurface>{Me
-.GetSurface(0)};var Ɠ=(IMyTextSurface)GridTerminalSystem.GetBlockWithName(DISPLAY_NAME);if(Ɠ!=null){ű.Add(Ɠ);}foreach(var
-Ƒ in ű){Ƒ.ContentType=ContentType.SCRIPT;Ƒ.Alignment=TextAlignment.CENTER;Ƒ.Script=string.Empty;}if(COCKPIT_DISPLAY_INDEX
-.HasValue){var ƒ=Ų as IMyCockpit;if(ƒ!=null){var Ƒ=ƒ.GetSurface(COCKPIT_DISPLAY_INDEX.GetValueOrDefault());if(Ƒ!=null){Ƒ.
-WriteText(string.Empty);Ƒ.ContentType=ContentType.TEXT_AND_IMAGE;Ƒ.Alignment=TextAlignment.CENTER;Ƒ.Font="Monospace";Ű=Ƒ;}}}var Ɛ
-=(IMyTextSurface)GridTerminalSystem.GetBlockWithName(TEXT_DISPLAY_NAME);if(Ɛ!=null){Ɛ.WriteText(string.Empty);Ɛ.
-ContentType=ContentType.TEXT_AND_IMAGE;Ɛ.Alignment=TextAlignment.CENTER;Ɛ.Font="Monospace";((IMyTerminalBlock)Ɛ).CustomData=
-TEXT_DISPLAY_HUDLCD;ů=Ɛ;}var Ə=(IMyTextSurface)GridTerminalSystem.GetBlockWithName(RANK_DISPLAY_NAME);if(Ə!=null){Ə.WriteText(string.Empty)
-;Ə.ContentType=ContentType.TEXT_AND_IMAGE;Ə.Alignment=TextAlignment.CENTER;Ə.Font="Monospace";((IMyTerminalBlock)Ə).
-CustomData=RANK_DISPLAY_HUDLCD;Ů=Ə;}}void Ǝ(){var È=new List<IMyLightingBlock>();GridTerminalSystem.GetBlockGroupWithName(
-BRAKELIGHT_GROUP_NAME).GetBlocksOfType<IMyLightingBlock>(È,Æ=>Æ.CubeGrid==Me.CubeGrid);if(È.Count<=0){throw new Exception(
-$"\"{BRAKELIGHT_GROUP_NAME}\" group not set.");}ŝ=new List<IMyLightingBlock>();foreach(var Å in È){Å.Intensity=5f;Å.BlinkLength=50f;Å.BlinkIntervalSeconds=0f;ŝ.Add(Å
-);}Ņ=new List<IMyLightingBlock>();GridTerminalSystem.GetBlocksOfType(Ņ,Æ=>Æ.CubeGrid!=Me.CubeGrid);foreach(var Å in Ņ){Å.
-BlinkLength=50f;Å.BlinkIntervalSeconds=0;}}void Ê(){ņ=new List<IMyLightingBlock>();var È=new List<IMyTerminalBlock>();var Ç=
-GridTerminalSystem.GetBlockGroupWithName(DRS_LIGHTS_GROUP_NAME);if(Ç==null){return;}Ç.GetBlocks(È,Æ=>Æ.CubeGrid==Me.CubeGrid);foreach(var
-Å in È){var Ä=(IMyLightingBlock)Å;ņ.Add(Ä);}}void É(){Ň=new List<IMyLightingBlock>();var È=new List<IMyTerminalBlock>();
-var Ç=GridTerminalSystem.GetBlockGroupWithName(ERS_LIGHTS_GROUP_NAME);if(Ç==null){return;}Ç.GetBlocks(È,Æ=>Æ.CubeGrid==Me.
-CubeGrid);foreach(var Å in È){var Ä=(IMyLightingBlock)Å;Ä.Radius=4f;Ä.Intensity=10f;Ä.BlinkLength=50f;Ä.BlinkIntervalSeconds=
-0.5f;Ň.Add(Ä);}}void Ã(){var Â=(IMySensorBlock)GridTerminalSystem.GetBlockWithName(DRAFTING_SENSOR_NAME);if(Â==null){return;
-}Ŭ=Â;Ŭ.TopExtend=50;Ŭ.BottomExtend=0;Ŭ.RightExtend=2.25f;Ŭ.LeftExtend=2.25f;Ŭ.FrontExtend=0;Ŭ.BackExtend=2;Ŭ.
-DetectSmallShips=true;Ŭ.DetectLargeShips=false;Ŭ.DetectStations=false;Ŭ.DetectSubgrids=false;Ŭ.DetectAsteroids=false;Ŭ.DetectPlayers=
-false;Ĺ=new List<MyDetectedEntityInfo>();}void Á(){var À=new List<IMyGyro>();GridTerminalSystem.GetBlocksOfType(À,h=>h.
-CubeGrid==Me.CubeGrid);if(À.Count<=0){throw new Exception("No gyroscope found.");}ũ=À;}void º(){if(string.IsNullOrWhiteSpace(Me.
-CustomData)){Ú(ā.ÿ);return;}var µ=Me.CustomData.Split(';');if(µ.Length<3){Ú(ā.ÿ);return;}var ª=Convert.ToChar(µ[0]);var z=(float)
-Convert.ToDouble(µ[1]);var Ë=(float)Convert.ToDouble(µ[2]);switch(ª){case'U':Ú(ā.Ā);break;case'S':Ú(ā.ÿ);break;case'M':Ú(ā.þ);
-break;case'H':Ú(ā.ý);break;case'X':Ú(ā.ü);break;case'I':Ú(ā.û);break;case'W':Ú(ā.ú);break;default:Ú(ā.ÿ);break;}ń.ģ=z;ľ=Ë;}
-void Í(){var à=new List<IMyRadioAntenna>();GridTerminalSystem.GetBlocksOfType(à);var á=à.FirstOrDefault();if(á==null){throw
-new Exception("No antenna!");}á.Enabled=true;á.Radius=5000;á.EnableBroadcasting=true;á.HudText=
-$"(P{ŉ.Ď}) {DRIVER_NAME}-{DRIVER_NUMBER}";ŭ=á;}void ß(){IGC.RegisterBroadcastListener("Address");var Þ=new List<IMyBroadcastListener>();IGC.GetBroadcastListeners
-(Þ);ł=Þ.FirstOrDefault();}void Ý(string Ü){if(Ü.Equals("LMT",StringComparison.InvariantCultureIgnoreCase)){Ũ=!Ũ;return;}
-if(Ü.Equals("LMT_ON",StringComparison.InvariantCultureIgnoreCase)){Ũ=true;return;}if(Ü.Equals("LMT_OFF",StringComparison.
-InvariantCultureIgnoreCase)){Ũ=false;return;}if(Ü.Equals("DRS",StringComparison.InvariantCultureIgnoreCase)){ŧ=!ŧ;return;}if(Ü.Equals("DRS_ON",
-StringComparison.InvariantCultureIgnoreCase)){ŧ=true;return;}if(Ü.Equals("DRS_OFF",StringComparison.InvariantCultureIgnoreCase)){ŧ=false
-;return;}if(Ü.Equals("ERS",StringComparison.InvariantCultureIgnoreCase)){Ŧ=!Ŧ;return;}if(Ü.Equals("ERS_ON",
-StringComparison.InvariantCultureIgnoreCase)){Ŧ=true;return;}if(Ü.Equals("ERS_OFF",StringComparison.InvariantCultureIgnoreCase)){Ŧ=false
-;return;}if(Ü.Equals("ULTRA",StringComparison.InvariantCultureIgnoreCase)){Û(ā.Ā);return;}if(Ü.Equals("SOFT",
-StringComparison.InvariantCultureIgnoreCase)){Û(ā.ÿ);return;}if(Ü.Equals("MEDIUM",StringComparison.InvariantCultureIgnoreCase)){Û(ā.þ);
-return;}if(Ü.Equals("HARD",StringComparison.InvariantCultureIgnoreCase)){Û(ā.ý);return;}if(Ü.Equals("EXTRA",StringComparison.
-InvariantCultureIgnoreCase)){Û(ā.ü);return;}if(Ü.Equals("INT",StringComparison.InvariantCultureIgnoreCase)){Û(ā.û);return;}if(Ü.Equals("WET",
-StringComparison.InvariantCultureIgnoreCase)){Û(ā.ú);return;}if(Ü.Equals("FLIP",StringComparison.InvariantCultureIgnoreCase)){Ļ=true;
-return;}if(Ü.Equals("FLAG_G",StringComparison.InvariantCultureIgnoreCase)){F(ę.Ę);return;}if(Ü.Equals("FLAG_Y",
-StringComparison.InvariantCultureIgnoreCase)){F(ę.ė);return;}if(Ü.Equals("FLAG_R",StringComparison.InvariantCultureIgnoreCase)){F(ę.Ė);
-return;}}void Û(ā Ù){if(!Ũ||Ų.GetShipSpeed()>1){return;}Ú(Ù);Ó(true);}void Ú(ā Ù){switch(Ù){case ā.Ā:ń=Ħ.Ĉ();break;case ā.ÿ:ń=
-Ħ.ć();break;case ā.þ:ń=Ħ.Ć();break;case ā.ý:ń=Ħ.ą();break;case ā.ü:ń=Ħ.Ą();break;case ā.û:ń=Ħ.ă();break;case ā.ú:ń=Ħ.Ă();
-break;default:break;}Ø(ń.ô);foreach(var Ô in ų){Ô.ApplyAction("Add Top Part");Ô.Friction=ń.Ģ;}}void Ø(Color w){foreach(var Å
-in ŝ){Å.Color=w;Å.BlinkIntervalSeconds=0;}foreach(var Å in Ņ){if(Å.IsSameConstructAs(Me)){Å.Color=w;Å.BlinkIntervalSeconds
-=0;}}}void Ö(float Õ){foreach(var Ô in ų){Ô.SetValueFloat("Speed Limit",Õ*3.6f);}}void Ó(bool Ò=false){ŀ-=(int)(ň*1000);
-if(!Ò&&ŀ>0){return;}var Ñ=ń.Ĥ;Me.CustomData=$"{Ñ};{ń.ģ};{ľ}";ŀ=š;}string Ð(){var Ï=string.Empty;switch(ŉ.Ķ){case ę.ĕ:Ï=
-"Blue";break;case ę.Ę:Ï="Green";break;case ę.Ė:Ï="Red";break;case ę.ė:Ï="Yellow";break;}return Ï;}Color Î(){var w=Color.Black;
-switch(ŉ.Ķ){case ę.ĕ:w=Color.Blue;break;case ę.Ę:w=Color.Green;break;case ę.Ė:w=Color.Red;break;case ę.ė:w=Color.Yellow;break;
-}return w;}string U(){const int u=6;var S=Ŧ?Ž:ľ<1?Ż:'-';var R=S+"E:";for(int J=0;J<u;J++){var H=1f/u;if(ľ>H*J){if(ľ<H*(J+
-1)){R+=ŷ;continue;}R+=Ÿ;}else{R+=Ŷ;}}return R;}string[]Q(char P,int O,float N,float M){var T=new string[O+2];T[0]=
-$"┌{P}┐";var L=Math.Floor(100*N/M);for(int J=1;J<T.Length-1;J++){var I=J-1;var H=100f/O;var G=T.Length-1-J;if(L>H*I){if(L<H*(I+1
-)){T[G]=$"│{ŷ}│";continue;}T[G]=$"│{Ÿ}│";}else{T[G]=$"│{Ŷ}│";}}T[T.Length-1]=L<100?$"{L+"%",3}":$"{L}";return T;}void F(ę
-E){if(Ń<=0){return;}IGC.SendUnicastMessage(Ń,"Flag",$"{(int)E}");}float D(){if(Ũ){return 20f;}if(Ľ||Ŧ){return 100f;}
-return ť;}float C(){if(Ũ){return 26;}if(ŉ.Ķ==ę.ė){return 45;}if(Ľ){return 999;}if(Ŧ){return 98f;}return ż;}IMyMotorSuspension
-B(ī K){return ų[(int)K];}void A(ī K,IMyMotorSuspension v){if(v==null){return;}ų[(int)K]=v;}void t(float r){var q=B(ī.ĩ);
-var p=B(ī.Ī);var o=B(ī.ħ);var n=B(ī.Ĩ);q.PropulsionOverride=r;p.PropulsionOverride=-r;o.PropulsionOverride=r;n.
-PropulsionOverride=-r;}float m(IMySensorBlock k){if(k==null||k.Closed||!k.IsActive){return float.MaxValue;}ĺ.Clear();k.DetectedEntities(ĺ)
-;if(ĺ.Count<=0){return float.MaxValue;}var K=Me.CubeGrid.GetPosition();var j=ĺ.Select(h=>Vector3.Distance(K,h.Position)).
-Min();return j;}string g(bool f){var e=m(f?ū:Ū);if(e==float.MaxValue){return string.Empty;}var S=f?ź:Ź;if(e<15){return
-$"{S}{S}{S}";}if(e<30){return$"{S}{S}";}return$"{S}";}char a(Ĕ Y){switch(Y){case Ĕ.ē:return ĸ.â;case Ĕ.Ē:return'-';case Ĕ.đ:return
-'+';case Ĕ.Đ:return'*';default:return ĸ.â;}}Color Z(Ĕ Y){switch(Y){case Ĕ.ē:return Color.White;case Ĕ.Ē:return Color.Yellow
-;case Ĕ.đ:return Color.Lime;case Ĕ.Đ:return Color.Magenta;default:return Color.White;}}class X{private char[]W;private
-int y;public int V{get;private set;}public char â{get{return W[V];}}public int ğ{get;}public int ĝ{get;set;}public X(char[]
-Ĝ,int ě){W=Ĝ;ğ=Ĝ.Length;ĝ=ě;}public void í(float ç){var Ě=(int)(ç*1000);y+=Ě;if(y>=ĝ){V++;if(V==ğ){V=0;}y-=ĝ;}}public
-override string ToString(){return$"{â}";}}private enum ę{Ę,ė,Ė,ĕ}private enum Ĕ{ē,Ē,đ,Đ}class ď{public int Ď{get;set;}public int
-č{get;set;}public int Č{get;set;}public int Ğ{get;set;}public string Ġ{get;set;}="--:--.---";public string ĵ{get;set;}=
-"--:--.---";public ę Ķ{get;set;}public ù Ĵ{get;set;}public int ĳ{get;set;}public int Ĳ{get;set;}public string ı{get;set;}public Ĕ İ
-{get;set;}public Ĕ į{get;set;}public Ĕ Į{get;set;}public string ĭ{get;set;}="--:--.---";public void Ĭ(string è){try{var µ
-=è.Split(';');Č=Convert.ToInt32(µ[0]);Ď=Convert.ToInt32(µ[1]);Ġ=µ[2];ĵ=µ[3];č=Convert.ToInt32(µ[4]);Ğ=Convert.ToInt32(µ[5
-]);Ķ=(ę)Convert.ToInt32(µ[6]);Ĵ=(ù)Convert.ToInt32(µ[7]);ĳ=Convert.ToInt32(µ[8]);Ĳ=Convert.ToInt32(µ[9]);ı=µ[10];İ=(Ĕ)
-Convert.ToInt32(µ[11]);į=(Ĕ)Convert.ToInt32(µ[12]);Į=(Ĕ)Convert.ToInt32(µ[13]);ĭ=µ[14];}catch(Exception){}}}private enum ī{Ī,ĩ,
-Ĩ,ħ}class Ħ{private float ĥ;public char Ĥ{get;private set;}public float ģ{get;set;}public float Ģ{get;private set;}public
-float ġ{get;private set;}public float ċ{get;private set;}public float Ċ{get;private set;}public float ã{get{return((ģ-ġ)/(Ģ-ġ
-))*100f;}}public int ö{get;private set;}public bool õ{get;private set;}public Color ô{get;private set;}private Ħ(float ó,
-int ò,float ñ,float ð,char ï,Color w,bool î=true){Ģ=ó;ģ=Ģ;ö=ò;ċ=ñ;Ċ=ð;ġ=(float)Math.Round(ċ-((Ģ-ċ)/(100-Ċ))*Ċ,2);Ĥ=ï;ô=w;õ=
-î;ĥ=(Ģ-ġ)/(60*ö);}public void í(IMyShipController ì,IMyMotorSuspension[]ë,List<IMyLightingBlock>ê,List<IMyLightingBlock>é
-,ď è,float ç){var æ=ì.GetShipSpeed();if(æ<1){return;}var å=(float)MathHelper.Clamp(æ,0,90)/90;var ä=ĥ*å*ç;ģ-=ä;ģ=
-MathHelper.Clamp(ģ,ġ,Ģ);foreach(var Ô in ë){Ô.Friction=!(õ&&è.Ĵ==ù.ø)?ģ:ģ/2;}if(ã<=Ċ){if(é.Any(Å=>Å.BlinkIntervalSeconds<=0)){
-foreach(var Å in ê){Å.BlinkIntervalSeconds=0.25f;}foreach(var Å in é){Å.BlinkIntervalSeconds=0.25f;}}}else{if(é.Any(Å=>Å.
-BlinkIntervalSeconds>0)){foreach(var Å in ê){Å.BlinkIntervalSeconds=0f;}foreach(var Å in é){Å.BlinkIntervalSeconds=0f;}}}if(ģ<=ġ){if(ë.All(Ô
-=>Ô.IsAttached)){var ĉ=new Random().Next(4);ë[ĉ].Detach();}}}public static Ħ Ĉ(){return new Ħ(100,5,60,20,'U',new Color(
-192,0,255));}public static Ħ ć(){return new Ħ(100,8,50,20,'S',Color.Red);}public static Ħ Ć(){return new Ħ(75,13,50,20,'M',
-Color.Yellow);}public static Ħ ą(){return new Ħ(60,21,50,20,'H',Color.White);}public static Ħ Ą(){return new Ħ(55,34,50,20,
-'X',new Color(255,32,0));}public static Ħ ă(){return new Ħ(60,8,40,10,'I',Color.Green,false);}public static Ħ Ă(){return
-new Ħ(50,21,40,10,'W',new Color(0,16,255),false);}}private enum ā{Ā,ÿ,þ,ý,ü,û,ú}private enum ù{Ì,ø}
+private readonly string CODE_VERSION = "13.0.0";
+private const int CONNECTION_TIMEOUT = 3000;
+private const int SAVE_STATE_COOLDOWN = 1000;
+private const int DRAFTING_COOLDOWN = 1000;
+private const float DEFAULT_SUSPENSION_POWER = 80f;
+private const float DEFAULT_SUSPENSION_SPEED_LIMIT = 95f;
+private readonly char ARROW_DOWN_CHAR = '\u25BC';
+private readonly char ARROW_UP_CHAR = '\u25B2';
+private readonly char ARROW_RIGHT = '\u25BA';
+private readonly char ARROW_LEFT = '\u25C4';
+private const char BLOCK_FILLED_CHAR = '\u2588';
+private const char BLOCK_HALF_CHAR = '\u2592';
+private const char BLOCK_EMPTY_CHAR = '\u2591';
+private const float ERS_PROPULSION_OVERRIDE = 1.7f;
+private bool _hasError;
+private IMyMotorSuspension[] _suspensions;
+private IMyShipController _mainController;
+private List<IMyTextSurface> _displays;
+private IMyTextSurface _cockpitDisplay;
+private IMyTextSurface _textDisplay;
+private IMyTextSurface _rankDisplay;
+private IMyRadioAntenna _antenna;
+private IMySensorBlock _draftingSensor;
+private IMySensorBlock _mirrorRight;
+private IMySensorBlock _mirrorLeft;
+private List<IMyGyro> _gyros;
+private bool _isPitLimiterActive;
+private bool _isDrsActive;
+private bool _isErsActive;
+private StringBuilder _stringBuilder;
+private RaceData _data;
+private List<IMyLightingBlock> _brakelights;
+private List<IMyLightingBlock> _ersLights;
+private List<IMyLightingBlock> _drsLights;
+private List<IMyLightingBlock> _tyreLights;
+private Tyre _currentTyres;
+private long _address = -1;
+private IMyBroadcastListener _broadcastListener;
+private int _connectionTimeout;
+private int _saveStateCooldown;
+private DateTime _lastTimeStamp;
+private float _delta;
+private float _ersCharge = 1f;
+private bool _isDrafting = false;
+private int _draftingCooldown;
+private bool _doFlip;
+private List<MyDetectedEntityInfo> _mirrorAuxList;
+private List<MyDetectedEntityInfo> _draftingAuxList;
+private CharacterAnimation _spinnerAnim;
+
+public Program()
+{
+    _data = new RaceData();
+    _spinnerAnim = new CharacterAnimation(new char[] { '-', '\\', '|', '/' }, 150);
+
+    try
+    {
+        SetupGridName();
+        SetupController();
+        SetupSuspensions();
+        SetupDisplays();
+        SetupBrakelights();
+        SetupErsLights();
+        SetupDrsLights();
+        SetupAntenna();
+        SetupMirrors();
+        LoadState();
+        SetupBroadcastListener();
+        SetupDraftingSensor();
+        SetupGyros();
+    }
+    catch (Exception ex)
+    {
+        _hasError = true;
+        Echo(ex.Message);
+        return;
+    }
+
+    Runtime.UpdateFrequency = UpdateFrequency.Update1;
+    _lastTimeStamp = DateTime.Now;
+}
+
+private void SetupMirrors()
+{
+    _mirrorAuxList = new List<MyDetectedEntityInfo>();
+    _mirrorRight = (IMySensorBlock)GridTerminalSystem.GetBlockWithName(MIRROR_SENSOR_RIGHT_NAME);
+
+    if (_mirrorRight != null)
+    {
+        _mirrorRight.DetectSmallShips = true;
+        _mirrorRight.DetectLargeShips = false;
+        _mirrorRight.DetectPlayers = false;
+        _mirrorRight.LeftExtend = 12.5f;
+        _mirrorRight.RightExtend = 0.5f;
+        _mirrorRight.FrontExtend = 50;
+        _mirrorRight.BackExtend = 5;
+        _mirrorRight.TopExtend = 5;
+        _mirrorRight.BottomExtend = 5;
+    }
+
+    _mirrorLeft = (IMySensorBlock)GridTerminalSystem.GetBlockWithName(MIRROR_SENSOR_LEFT_NAME);
+
+    if (_mirrorLeft != null)
+    {
+        _mirrorLeft.DetectSmallShips = true;
+        _mirrorLeft.DetectLargeShips = false;
+        _mirrorLeft.DetectPlayers = false;
+        _mirrorLeft.LeftExtend = 0.5f;
+        _mirrorLeft.RightExtend = 12.5f;
+        _mirrorLeft.FrontExtend = 50;
+        _mirrorLeft.BackExtend = 5;
+        _mirrorLeft.TopExtend = 5;
+        _mirrorLeft.BottomExtend = 5;
+    }
+}
+
+public void Save()
+{
+    // Called when the program needs to save its state. Use
+    // this method to save your state to the Storage field
+    // or some other means. 
+    // 
+    // This method is optional and can be removed if not
+    // needed.
+}
+
+public void Main(string argument, UpdateType updateSource)
+{
+    if (_hasError)
+    {
+        return;
+    }
+
+    var currentTimeStamp = DateTime.Now;
+    _delta = (float)(currentTimeStamp - _lastTimeStamp).TotalMilliseconds / 1000;
+
+    Echo($"Running CRS-F1 {CODE_VERSION}");
+
+    HandleArgument(argument);
+    UpdateDrs();
+    UpdateErs();
+    UpdateFlagEffect();
+    UpdatePitLimiter();
+    UpdateDraftingSensor();
+    UpdateTyreDegradation();
+    UpdateCommunication();
+    UpdateDisplays();
+    UpdateAntenna();
+    UpdateGyros();
+
+    _lastTimeStamp = currentTimeStamp;
+}
+
+private void UpdateGyros()
+{
+    if (!_doFlip)
+    {
+        return;
+    }
+
+    // The dot product is only positive when the car is flipped over
+    if (Vector3D.Dot(_mainController.GetNaturalGravity(), _mainController.WorldMatrix.Up) > 0)
+    {
+        for (int i = 0; i < _gyros.Count; i++)
+        {
+            _gyros[i].GyroOverride = true;
+        }
+
+        return;
+    }
+
+    // Simply disables gyro override if it's on
+    if (_gyros[0].GyroOverride)
+    {
+        for (int i = 0; i < _gyros.Count; i++)
+        {
+            _gyros[i].GyroOverride = false;
+        }
+
+        _doFlip = false;
+    }
+}
+
+private void UpdateFlagEffect()
+{
+    switch (_data.CurrentFlag)
+    {
+        case Flag.Yellow:
+            UpdateYellowFlagEffect();
+            break;
+
+        case Flag.Red:
+            UpdateRedFlagEffect();
+            break;
+
+        default:
+            if (!_isPitLimiterActive)
+            {
+                _mainController.HandBrake = false;
+                SetSpeedLimit(DEFAULT_SUSPENSION_SPEED_LIMIT);
+            }
+            break;
+    }
+}
+
+private void UpdateYellowFlagEffect()
+{
+    _isDrsActive = false;
+    _isErsActive = false;
+    _mainController.HandBrake = _mainController.GetShipSpeed() > 50;
+
+    SetSpeedLimit(50f);
+}
+
+private void UpdateRedFlagEffect()
+{
+    _isDrsActive = false;
+    _isErsActive = false;
+    _isPitLimiterActive = false;
+    _mainController.HandBrake = true;
+}
+
+private void UpdateCommunication()
+{
+    var unisource = IGC.UnicastListener;
+
+    if (!unisource.HasPendingMessage)
+    {
+        _connectionTimeout -= (int)(_delta * 1000);
+
+        if (_broadcastListener.HasPendingMessage && _connectionTimeout <= 0)
+        {
+            var message = _broadcastListener.AcceptMessage();
+
+            if (message.Tag == "Address")
+            {
+                _address = Convert.ToInt64(message.Data.ToString());
+                IGC.SendUnicastMessage(_address, "Register", $"{Me.CubeGrid.CustomName};{IGC.Me}");
+            }
+        }
+
+        return;
+    }
+
+    while (unisource.HasPendingMessage)
+    {
+        var messageUni = unisource.AcceptMessage();
+
+        if (messageUni.Tag == "RaceData")
+        {
+            _data.Map(messageUni.Data.ToString());
+        }
+
+        if (messageUni.Tag == "Argument")
+        {
+            HandleArgument(messageUni.Data.ToString());
+        }
+    }
+
+    _connectionTimeout = CONNECTION_TIMEOUT;
+}
+
+private void UpdateDisplays()
+{
+    _stringBuilder.Clear();
+
+    const int DISPLAY_WIDTH = 21;
+    const int DISPLAY_HEIGHT = 8;
+    const int INNER_DISPLAY_WIDTH = DISPLAY_WIDTH - 6;
+    var charBuffer = new char[DISPLAY_WIDTH, DISPLAY_HEIGHT];
+    var speed = _mainController.GetShipSpeed();
+    var tyreCompoundIndicator = _currentTyres.Symbol;
+    var strSpeed = $"{Math.Floor(speed)}m/s";
+    var ersBar = BuildVerticalBar('E', 8, _ersCharge, 1);
+    var tyreBar = BuildVerticalBar(tyreCompoundIndicator, 8, _currentTyres.WearPercentage, 1);
+    var strWeather = $"<{Weather.GetWeatherDescription(_data.CurrentWeather)}>".ToUpper();
+    var strWeatherLevelSlider = BuildWeatherLevelSlider(_data.CurrentWeather);
+    var strWeatherLine1 = $"DRY         WET";
+    var strWeatherLine2 = CentralizeString(strWeather, INNER_DISPLAY_WIDTH);
+    var controlLine = (_isDrsActive ? "DRS" : "   ") + " " +
+        (_isErsActive ? "ERS" : "   ") + " " +
+        (_isDrafting ? "DFT" : "   ") + " " +
+        (_isPitLimiterActive ? "PIT" : "   ");
+
+    var rightProximity = GetMirrorProximityArrows(true);
+    var leftProximity = GetMirrorProximityArrows(false);
+    var innerLine = leftProximity.PadRight((int)Math.Ceiling((float)INNER_DISPLAY_WIDTH / 2) - (int)Math.Ceiling((float)strSpeed.Length / 2))
+        + strSpeed +
+        rightProximity.PadLeft((int)Math.Floor((float)INNER_DISPLAY_WIDTH / 2) - (int)Math.Floor((float)strSpeed.Length / 2));
+
+    _spinnerAnim.Update(_delta);
+
+    var strS1 = $"S1{GetSectorStatusChar(_data.StatusS1)}";
+    var strS2 = $"S2{GetSectorStatusChar(_data.StatusS2)}";
+    var strS3 = $"S3{GetSectorStatusChar(_data.StatusS3)}";
+
+    var lines = new string[]
+    {
+        $"   {innerLine}   ",
+        $"   {controlLine}   ",
+        $"   P:{_data.Position:00}/{_data.TotalRacers:00} L:{(_data.Laps):00}/{_data.TotalLaps:00}   ",
+        $"   TIME: {_data.CurrentLapTime}   ",
+        $"   BEST: {_data.BestLapTime}   ",
+        $"   PREV: {_data.PrevLapTime}   ",
+        $"                     ",
+        $"   {strWeatherLine1}   ",
+        $"   {strWeatherLine2}   ",
+        (_connectionTimeout <= 0)
+            ? $"    NO CONNECTION    "
+            : $"                     "
+    };
+
+    for (int i = 0; i < lines.Length; i++)
+    {
+        _stringBuilder.AppendLine(lines[i]);
+    }
+
+    var text = _stringBuilder.ToString();
+
+    foreach (var d in _displays)
+    {
+        var frame = d.DrawFrame();
+        var bgColor = Color.Black;
+        var fontColor = DEFAULT_FONT_COLOR;
+
+        switch (_data.CurrentFlag)
+        {
+            case Flag.Yellow:
+                bgColor = Color.Yellow;
+                fontColor = Color.Black;
+                break;
+
+            case Flag.Red:
+                bgColor = Color.Red;
+                fontColor = Color.White;
+                break;
+
+            case Flag.Blue:
+                bgColor = Color.Blue;
+                fontColor = Color.White;
+                break;
+        }
+
+        d.BackgroundColor = bgColor;
+        d.ScriptBackgroundColor = bgColor;
+        d.FontColor = fontColor;
+
+        var scale = d.SurfaceSize.X / 256;
+        var textScale = scale * 0.6f;
+        var textSprite = MySprite.CreateText(text, "Monospace", fontColor, textScale);
+        textSprite.Position = new Vector2(128 * scale, 18 * scale);
+        frame.Add(textSprite);
+
+        var dots = MathHelper.Clamp(Math.Round(speed / (100f / 15)), 0, 100);
+
+        for (int i = 0; i < dots; i++)
+        {
+            var size = 8f * scale;
+            var spacing = 2f * scale;
+            var startAt = (d.SurfaceSize.X / 2) - ((15f * size + 14f * spacing) / 2) + size / 2;
+            var pos = new Vector2(startAt + (size + spacing) * i, size + spacing);
+            var dimensions = new Vector2(size);
+            var circle = MySprite.CreateSprite("Circle", pos, dimensions);
+
+            if (i < 5)
+            {
+                circle.Color = Color.Lime;
+            }
+            else if (i < 10)
+            {
+                circle.Color = Color.Red;
+            }
+            else
+            {
+                circle.Color = Color.Blue;
+            }
+
+            frame.Add(circle);
+        }
+
+        //Tyre Bar
+        var icon = MySprite.CreateSprite("Circle", new Vector2(22, 12 + 8 + 4), new Vector2(22));
+        icon.Color = _currentTyres.Color;
+
+        var inner = MySprite.CreateSprite("Circle", new Vector2(22, 12 + 8 + 4), new Vector2(20));
+        inner.Color = Color.Black;
+
+        var tyreSymbol = MySprite.CreateText(_currentTyres.Symbol.ToString(), "DEBUG", Color.White, 0.5f * scale);
+        tyreSymbol.Position = new Vector2(22, 12 + 4);
+
+        var fillBg = MySprite.CreateSprite("SquareSimple", new Vector2(22, 106), new Vector2(18, 128));
+        fillBg.Color = new Color(32, 32, 32);
+
+        var totalHeight = fillBg.Size.GetValueOrDefault().Y;
+        var height = totalHeight * _currentTyres.WearPercentage;
+
+        var fill = MySprite.CreateSprite("SquareSimple", new Vector2(22, 42 + (totalHeight - height / 2)), new Vector2(18, height));
+        fill.Color = _currentTyres.Color;
+
+        var percText = MySprite.CreateText($"{Math.Floor(_currentTyres.WearPercentage * 100)}%", "DEBUG", Color.White, textScale);
+        percText.Position = new Vector2(22, 176);
+
+        icon.Position *= scale;
+        icon.Size *= scale;
+        frame.Add(icon);
+
+        inner.Position *= scale;
+        inner.Size *= scale;
+        frame.Add(inner);
+
+        tyreSymbol.Position *= scale;
+        tyreSymbol.Size *= scale;
+        frame.Add(tyreSymbol);
+
+        fillBg.Position *= scale;
+        fillBg.Size *= scale;
+        frame.Add(fillBg);
+
+        fill.Position *= scale;
+        fill.Size *= scale;
+        frame.Add(fill);
+
+        percText.Position *= scale;
+        percText.Size *= scale;
+        frame.Add(percText);
+
+        //ERS Bar
+        icon = MySprite.CreateSprite("IconEnergy", new Vector2(256 - 22, 12 + 8 + 4), new Vector2(24));
+        icon.Color = Color.Cyan;
+
+        fillBg = MySprite.CreateSprite("SquareSimple", new Vector2(256 - 22, 106), new Vector2(18, 128));
+        fillBg.Color = new Color(32, 32, 32);
+
+        totalHeight = fillBg.Size.GetValueOrDefault().Y;
+        height = totalHeight * _ersCharge;
+
+        fill = MySprite.CreateSprite("SquareSimple", new Vector2(256 - 22, 42 + (totalHeight - height / 2)), new Vector2(18, height));
+        fill.Color = Color.Cyan;
+
+        percText = MySprite.CreateText($"{Math.Floor(_ersCharge * 100)}%", "DEBUG", Color.White, textScale);
+        percText.Position = new Vector2(256 - 22, 176);
+
+        icon.Position *= scale;
+        icon.Size *= scale;
+        frame.Add(icon);
+
+        fillBg.Position *= scale;
+        fillBg.Size *= scale;
+        frame.Add(fillBg);
+
+        fill.Position *= scale;
+        fill.Size *= scale;
+        frame.Add(fill);
+
+        percText.Position *= scale;
+        percText.Size *= scale;
+        frame.Add(percText);
+
+        //Sectors
+        var textS1 = MySprite.CreateText($"{strS1}", "Monospace", GetSectorStatusColor(_data.StatusS1), 0.6f);
+        textS1.Position = new Vector2(128 - 64 + 4 + 1, 128 - 4 - 2);
+
+        var textS2 = MySprite.CreateText($"{strS2}", "Monospace", GetSectorStatusColor(_data.StatusS2), 0.6f);
+        textS2.Position = new Vector2(128, 128 - 4 - 2);
+
+        var textS3 = MySprite.CreateText($"{strS3}", "Monospace", GetSectorStatusColor(_data.StatusS3), 0.6f);
+        textS3.Position = new Vector2(128 + 64 - 4 - 2, 128 - 4 - 2);
+
+        textS1.Position *= scale;
+        textS1.Size *= scale;
+        frame.Add(textS1);
+
+        textS2.Position *= scale;
+        textS2.Size *= scale;
+        frame.Add(textS2);
+
+        textS3.Position *= scale;
+        textS3.Size *= scale;
+        frame.Add(textS3);
+
+        for (int l = -3; l <= 3; l++)
+        {
+            var character = (int)_data.CurrentWeather != l ? "■" : "█";
+            var t = MySprite.CreateText(character, "Monospace", Weather.GetWeatherColor((WeatherLevel)l), 0.6f);
+            t.Position = new Vector2(128 - 64 + 32 - 5 + (l + 3) * 12, 128 + 11);
+
+            t.Position *= scale;
+            t.Size *= scale;
+            frame.Add(t);
+        }
+
+        frame.Dispose();
+    }
+
+    _stringBuilder.Clear();
+    lines[6] = $"    {strS1}  {strS2}  {strS3}    ";
+    lines[7] = $"   DRY {strWeatherLevelSlider} WET   ";
+
+    var maxLines = Math.Max(lines.Length, Math.Max(tyreBar.Length, ersBar.Length));
+
+    for (int i = 0; i < maxLines; i++)
+    {
+        var prefix = i < tyreBar.Length ? tyreBar[i] : "   ";
+        var inner = i < lines.Length ? lines[i].Substring(3, 15) : "               ";
+        var sufix = i < ersBar.Length ? ersBar[i] : "   ";
+
+        _stringBuilder.AppendLine($"{prefix}{inner}{sufix}");
+    }
+
+    text = _stringBuilder.ToString();
+    _textDisplay?.WriteText(text);
+    _cockpitDisplay?.WriteText(text);
+
+    if (_rankDisplay != null && _data != null && _data.RankTable != null)
+    {
+        _rankDisplay.WriteText(_data.RankTable);
+    }
+}
+
+private string BuildWeatherLevelSlider(WeatherLevel weatherLevel)
+{
+    var slider = string.Empty;
+    var level = (int)weatherLevel;
+
+    for (int i = -3; i <= 3; i++)
+    {
+        if (level == i)
+        {
+            slider += "█";
+            continue;
+        }
+
+        slider += "■";
+    }
+
+    return slider;
+}
+
+private void UpdatePitLimiter()
+{
+    if (!_isPitLimiterActive)
+    {
+        foreach (var s in _suspensions)
+        {
+            s.Power = DEFAULT_SUSPENSION_POWER;
+            s.SetValueFloat("Speed Limit", DEFAULT_SUSPENSION_SPEED_LIMIT * 3.6f);
+        }
+
+        return;
+    }
+
+    foreach (var s in _suspensions)
+    {
+        s.Power = 20f;
+        s.SetValueFloat("Speed Limit", 26f * 3.6f);
+    }
+
+    var speed = _mainController.GetShipSpeed();
+    _mainController.HandBrake = speed > 24;
+}
+
+private void UpdateDrs()
+{
+    var isBreaking = _mainController.MoveIndicator.Z > 0
+        || _mainController.MoveIndicator.Y > 0
+        || _mainController.HandBrake;
+
+    if (isBreaking)
+    {
+        _isDrsActive = false;
+    }
+
+    var fr = GetSuspension(SuspensionPosition.FrontRight);
+    var fl = GetSuspension(SuspensionPosition.FrontLeft);
+    var rr = GetSuspension(SuspensionPosition.RearRight);
+    var rl = GetSuspension(SuspensionPosition.RearLeft);
+    var rate = (!_isDrsActive ? -150f : 150f) * _delta;
+
+    fr.Strength = MathHelper.Clamp(fr.Strength + rate, DEFAULT_SUSPENSION_STRENGTH_F, 100);
+    fl.Strength = MathHelper.Clamp(fl.Strength + rate, DEFAULT_SUSPENSION_STRENGTH_F, 100);
+    rr.Strength = MathHelper.Clamp(rr.Strength + rate, DEFAULT_SUSPENSION_STRENGTH_R, 100);
+    rl.Strength = MathHelper.Clamp(rl.Strength + rate, DEFAULT_SUSPENSION_STRENGTH_R, 100);
+
+    foreach (var l in _drsLights)
+    {
+        l.Color = _isDrsActive ? Color.Blue : Color.Black;
+        l.Enabled = _isDrsActive;
+    }
+}
+
+private void UpdateErs()
+{
+    if (_isPitLimiterActive)
+    {
+        _isErsActive = false;
+    }
+
+    var throttle = _mainController.MoveIndicator.Z < 0;
+    var speed = _mainController.GetShipSpeed();
+
+    const float rechargeRate = 1f / 135;
+    const float dischargeRate = 1f / 45;
+
+    if (speed >= 1)
+    {
+        if (!_isErsActive || (_isErsActive && !throttle))
+        {
+            var factor = (float)MathHelper.Clamp(speed / DEFAULT_SUSPENSION_SPEED_LIMIT, 0f, 1f);
+            _ersCharge += rechargeRate * factor * _delta;
+        }
+        else
+        {
+            var factor = 1;
+            _ersCharge -= dischargeRate * factor * _delta;
+        }
+    }
+
+    _ersCharge = MathHelper.Clamp(_ersCharge, 0, 1);
+
+    if (_ersCharge <= 0)
+    {
+        _isErsActive = false;
+    }
+
+    foreach (var s in _suspensions)
+    {
+        s.Power = GetWheelPower();
+    }
+
+    var speedLimit = GetWheelSpeedLimit();
+    SetSpeedLimit(speedLimit);
+
+    var propulsion = _isErsActive && throttle ? ERS_PROPULSION_OVERRIDE : 0;
+    SetPropulsionOverride(propulsion);
+
+    foreach (var l in _ersLights)
+    {
+        l.Color = _isErsActive ? Color.Cyan : Color.Black;
+    }
+}
+
+private void UpdateTyreDegradation()
+{
+    _currentTyres.Update(_mainController, _suspensions, _brakelights, _tyreLights, _data, _delta);
+
+    SaveState();
+}
+
+private void UpdateAntenna()
+{
+    if (_antenna == null)
+    {
+        return;
+    }
+
+    _antenna.HudText = $"P{_data.Position}";
+}
+
+private void UpdateDraftingSensor()
+{
+    _draftingAuxList.Clear();
+
+    if (_draftingSensor == null || _draftingSensor.Closed)
+    {
+        _isDrafting = false;
+        return;
+    }
+
+    _draftingSensor.DetectedEntities(_draftingAuxList);
+
+    var isBehindCar = _draftingAuxList.Any(x => !x.IsEmpty()
+        && x.Type == MyDetectedEntityType.SmallGrid
+        && !x.Name.Contains("Grid")
+        && x.Velocity.Length() >= 70);
+
+    var currentSpeed = _mainController.GetShipSpeed();
+
+    if (isBehindCar && currentSpeed >= 50)
+    {
+        _draftingCooldown = DRAFTING_COOLDOWN;
+    }
+
+    if (_isPitLimiterActive)
+    {
+        _draftingCooldown = 0;
+    }
+
+    _isDrafting = _draftingCooldown > 0;
+
+    foreach (var s in _suspensions)
+    {
+        s.Power = GetWheelPower();
+        var speedLimit = GetWheelSpeedLimit();
+
+        s.SetValueFloat("Speed Limit", speedLimit * 3.6f);
+    }
+
+    _draftingCooldown -= (int)(_delta * 1000);
+}
+
+private void SetupGridName()
+{
+    if (DRIVER_NUMBER <= 0 && DRIVER_NUMBER > 99)
+    {
+        throw new Exception("DRIVER_NUMBER should be between 1 and 99");
+    }
+
+    var teamTag = TEAM_TAG;
+
+    if (TEAM_TAG == string.Empty)
+    {
+        teamTag = "XXX";
+    }
+
+    teamTag = teamTag.Trim()
+        .Substring(0, 3)
+        .ToUpper();
+
+    Me.CubeGrid.CustomName = $"{teamTag} #{DRIVER_NUMBER:00}-{DRIVER_NAME.Trim()}";
+}
+
+private void SetupController()
+{
+    var controllerList = new List<IMyShipController>();
+    GridTerminalSystem.GetBlocksOfType(controllerList);
+
+    var control = controllerList.FirstOrDefault(c => c is IMyRemoteControl)
+        ?? controllerList.FirstOrDefault(c => c is IMyCockpit);
+
+    if (control == null)
+    {
+        throw new Exception("No cockpit or remote control!");
+    }
+
+    _mainController = control;
+}
+
+private void SetupSuspensions()
+{
+    var suspensions = new List<IMyMotorSuspension>();
+    GridTerminalSystem.GetBlocksOfType(suspensions, s => s.CubeGrid == Me.CubeGrid);
+
+    if (suspensions == null || suspensions.Count != 4)
+    {
+        throw new Exception("Need 4 suspensions!");
+    }
+
+    _suspensions = new IMyMotorSuspension[4];
+
+    for (int i = 0; i < suspensions.Count; i++)
+    {
+        var suspension = suspensions[i];
+        var worldDirection = suspension.GetPosition() - _mainController.CenterOfMass;
+        var bodyPosition = Vector3D.TransformNormal(worldDirection, MatrixD.Transpose(_mainController.WorldMatrix));
+
+        if (bodyPosition.X < 0)
+        {
+            if (bodyPosition.Z < 0)
+            {
+                suspension.CustomName = "Wheel Suspension FL";
+                SetSuspension(SuspensionPosition.FrontLeft, suspension);
+            }
+            else if (bodyPosition.Z > 0)
+            {
+                suspension.CustomName = "Wheel Suspension RL";
+                SetSuspension(SuspensionPosition.RearLeft, suspension);
+            }
+        }
+        else if (bodyPosition.X > 0)
+        {
+            if (bodyPosition.Z < 0)
+            {
+                suspension.CustomName = "Wheel Suspension FR";
+                SetSuspension(SuspensionPosition.FrontRight, suspension);
+            }
+            else if (bodyPosition.Z > 0)
+            {
+                suspension.CustomName = "Wheel Suspension RR";
+                SetSuspension(SuspensionPosition.RearRight, suspension);
+            }
+        }
+    }
+}
+
+private void SetupDisplays()
+{
+    _stringBuilder = new StringBuilder();
+    _displays = new List<IMyTextSurface> { Me.GetSurface(0) };
+
+    var display = (IMyTextSurface)GridTerminalSystem.GetBlockWithName(DISPLAY_NAME);
+
+    if (display != null)
+    {
+        _displays.Add(display);
+    }
+
+    foreach (var d in _displays)
+    {
+        d.ContentType = ContentType.SCRIPT;
+        d.Alignment = TextAlignment.CENTER;
+        d.Script = string.Empty;
+    }
+
+    if (COCKPIT_DISPLAY_INDEX.HasValue)
+    {
+        var cockpit = _mainController as IMyCockpit;
+
+        if (cockpit != null)
+        {
+            var d = cockpit.GetSurface(COCKPIT_DISPLAY_INDEX.GetValueOrDefault());
+
+            if (d != null)
+            {
+                d.WriteText(string.Empty);
+                d.ContentType = ContentType.TEXT_AND_IMAGE;
+                d.Alignment = TextAlignment.CENTER;
+                d.Font = "Monospace";
+
+                _cockpitDisplay = d;
+            }
+        }
+    }
+
+    var textDisplay = (IMyTextSurface)GridTerminalSystem.GetBlockWithName(TEXT_DISPLAY_NAME);
+
+    if (textDisplay != null)
+    {
+        textDisplay.WriteText(string.Empty);
+        textDisplay.ContentType = ContentType.TEXT_AND_IMAGE;
+        textDisplay.Alignment = TextAlignment.CENTER;
+        textDisplay.Font = "Monospace";
+        ((IMyTerminalBlock)textDisplay).CustomData = TEXT_DISPLAY_HUDLCD;
+
+        _textDisplay = textDisplay;
+    }
+
+    var rankDisplay = (IMyTextSurface)GridTerminalSystem.GetBlockWithName(RANK_DISPLAY_NAME);
+
+    if (rankDisplay != null)
+    {
+        rankDisplay.WriteText(string.Empty);
+        rankDisplay.ContentType = ContentType.TEXT_AND_IMAGE;
+        rankDisplay.Alignment = TextAlignment.CENTER;
+        rankDisplay.Font = "Monospace";
+        ((IMyTerminalBlock)rankDisplay).CustomData = RANK_DISPLAY_HUDLCD;
+
+        _rankDisplay = rankDisplay;
+    }
+}
+
+private void SetupBrakelights()
+{
+    var lights = new List<IMyLightingBlock>();
+
+    GridTerminalSystem.GetBlockGroupWithName(BRAKELIGHT_GROUP_NAME)
+        .GetBlocksOfType<IMyLightingBlock>(lights, b => b.CubeGrid == Me.CubeGrid);
+
+    if (lights.Count <= 0)
+    {
+        throw new Exception($"\"{BRAKELIGHT_GROUP_NAME}\" group not set.");
+    }
+
+    _brakelights = new List<IMyLightingBlock>();
+
+    foreach (var l in lights)
+    {
+        l.Intensity = 5f;
+        l.BlinkLength = 50f;
+        l.BlinkIntervalSeconds = 0f;
+
+        _brakelights.Add(l);
+    }
+
+    _tyreLights = new List<IMyLightingBlock>();
+    GridTerminalSystem.GetBlocksOfType(_tyreLights, b => b.CubeGrid != Me.CubeGrid);
+
+    foreach (var l in _tyreLights)
+    {
+        l.BlinkLength = 50f;
+        l.BlinkIntervalSeconds = 0;
+    }
+}
+
+private void SetupDrsLights()
+{
+    _drsLights = new List<IMyLightingBlock>();
+    var lights = new List<IMyTerminalBlock>();
+    var group = GridTerminalSystem.GetBlockGroupWithName(DRS_LIGHTS_GROUP_NAME);
+
+    if (group == null)
+    {
+        return;
+    }
+
+    group.GetBlocks(lights, b => b.CubeGrid == Me.CubeGrid);
+
+    foreach (var l in lights)
+    {
+        var light = (IMyLightingBlock)l;
+        _drsLights.Add(light);
+    }
+}
+
+private void SetupErsLights()
+{
+    _ersLights = new List<IMyLightingBlock>();
+    var lights = new List<IMyTerminalBlock>();
+    var group = GridTerminalSystem.GetBlockGroupWithName(ERS_LIGHTS_GROUP_NAME);
+
+    if (group == null)
+    {
+        return;
+    }
+
+    group.GetBlocks(lights, b => b.CubeGrid == Me.CubeGrid);
+
+    foreach (var l in lights)
+    {
+        var light = (IMyLightingBlock)l;
+        light.Radius = 4f;
+        light.Intensity = 10f;
+        light.BlinkLength = 50f;
+        light.BlinkIntervalSeconds = 0.5f;
+
+        _ersLights.Add(light);
+    }
+}
+
+private void SetupDraftingSensor()
+{
+    var sensor = (IMySensorBlock)GridTerminalSystem.GetBlockWithName(DRAFTING_SENSOR_NAME);
+
+    if (sensor == null)
+    {
+        return;
+    }
+
+    _draftingSensor = sensor;
+    _draftingSensor.TopExtend = 50;
+    _draftingSensor.BottomExtend = 0;
+    _draftingSensor.RightExtend = 2.25f;
+    _draftingSensor.LeftExtend = 2.25f;
+    _draftingSensor.FrontExtend = 0;
+    _draftingSensor.BackExtend = 2;
+    _draftingSensor.DetectSmallShips = true;
+    _draftingSensor.DetectLargeShips = false;
+    _draftingSensor.DetectStations = false;
+    _draftingSensor.DetectSubgrids = false;
+    _draftingSensor.DetectAsteroids = false;
+    _draftingSensor.DetectPlayers = false;
+
+    _draftingAuxList = new List<MyDetectedEntityInfo>();
+}
+
+private void SetupGyros()
+{
+    var gyros = new List<IMyGyro>();
+
+    GridTerminalSystem.GetBlocksOfType(gyros, x => x.CubeGrid == Me.CubeGrid);
+
+    if (gyros.Count <= 0)
+    {
+        throw new Exception("No gyroscope found.");
+    }
+
+    _gyros = gyros;
+}
+
+private void LoadState()
+{
+    if (string.IsNullOrWhiteSpace(Me.CustomData))
+    {
+        SetTyres(TyreCompound.Soft);
+        return;
+    }
+
+    var values = Me.CustomData.Split(';');
+
+    if (values.Length < 3)
+    {
+        SetTyres(TyreCompound.Soft);
+        return;
+    }
+
+    var compoundChar = Convert.ToChar(values[0]);
+    var wearPercentage = (float)Convert.ToDouble(values[1]);
+    var charge = (float)Convert.ToDouble(values[2]);
+
+    _currentTyres = Tyre.Load(compoundChar, wearPercentage);
+    _ersCharge = charge;
+}
+
+private void SetupAntenna()
+{
+    var antennas = new List<IMyRadioAntenna>();
+    GridTerminalSystem.GetBlocksOfType(antennas);
+    var antenna = antennas.FirstOrDefault();
+
+    if (antenna == null)
+    {
+        throw new Exception("No antenna!");
+    }
+
+    antenna.Enabled = true;
+    antenna.Radius = 5000;
+    antenna.EnableBroadcasting = true;
+    antenna.HudText = $"(P{_data.Position}) {DRIVER_NAME}-{DRIVER_NUMBER}";
+    _antenna = antenna;
+}
+
+private void SetupBroadcastListener()
+{
+    IGC.RegisterBroadcastListener("Address");
+    var listeners = new List<IMyBroadcastListener>();
+    IGC.GetBroadcastListeners(listeners);
+    _broadcastListener = listeners.FirstOrDefault();
+}
+
+private void HandleArgument(string argument)
+{
+    if (argument.Equals("LMT", StringComparison.InvariantCultureIgnoreCase))
+    {
+        _isPitLimiterActive = !_isPitLimiterActive;
+        return;
+    }
+
+    if (argument.Equals("LMT_ON", StringComparison.InvariantCultureIgnoreCase))
+    {
+        _isPitLimiterActive = true;
+        return;
+    }
+
+    if (argument.Equals("LMT_OFF", StringComparison.InvariantCultureIgnoreCase))
+    {
+        _isPitLimiterActive = false;
+        return;
+    }
+
+    if (argument.Equals("DRS", StringComparison.InvariantCultureIgnoreCase))
+    {
+        _isDrsActive = !_isDrsActive;
+        return;
+    }
+
+    if (argument.Equals("DRS_ON", StringComparison.InvariantCultureIgnoreCase))
+    {
+        _isDrsActive = true;
+        return;
+    }
+
+    if (argument.Equals("DRS_OFF", StringComparison.InvariantCultureIgnoreCase))
+    {
+        _isDrsActive = false;
+        return;
+    }
+
+    if (argument.Equals("ERS", StringComparison.InvariantCultureIgnoreCase))
+    {
+        _isErsActive = !_isErsActive;
+        return;
+    }
+
+    if (argument.Equals("ERS_ON", StringComparison.InvariantCultureIgnoreCase))
+    {
+        _isErsActive = true;
+        return;
+    }
+
+    if (argument.Equals("ERS_OFF", StringComparison.InvariantCultureIgnoreCase))
+    {
+        _isErsActive = false;
+        return;
+    }
+
+    if (argument.Equals("ULTRA", StringComparison.InvariantCultureIgnoreCase))
+    {
+        ChangeTyres(TyreCompound.Ultra);
+        return;
+    }
+
+    if (argument.Equals("SOFT", StringComparison.InvariantCultureIgnoreCase))
+    {
+        ChangeTyres(TyreCompound.Soft);
+        return;
+    }
+
+    if (argument.Equals("MEDIUM", StringComparison.InvariantCultureIgnoreCase))
+    {
+        ChangeTyres(TyreCompound.Medium);
+        return;
+    }
+
+    if (argument.Equals("HARD", StringComparison.InvariantCultureIgnoreCase))
+    {
+        ChangeTyres(TyreCompound.Hard);
+        return;
+    }
+
+    if (argument.Equals("EXTRA", StringComparison.InvariantCultureIgnoreCase))
+    {
+        ChangeTyres(TyreCompound.Extra);
+        return;
+    }
+
+    if (argument.Equals("INT", StringComparison.InvariantCultureIgnoreCase))
+    {
+        ChangeTyres(TyreCompound.Intermediate);
+        return;
+    }
+
+    if (argument.Equals("WET", StringComparison.InvariantCultureIgnoreCase))
+    {
+        ChangeTyres(TyreCompound.Wet);
+        return;
+    }
+
+    if (argument.Equals("FLIP", StringComparison.InvariantCultureIgnoreCase))
+    {
+        _doFlip = true;
+        return;
+    }
+
+    if (argument.Equals("FLAG_G", StringComparison.InvariantCultureIgnoreCase))
+    {
+        RequestFlag(Flag.Green);
+        return;
+    }
+
+    if (argument.Equals("FLAG_Y", StringComparison.InvariantCultureIgnoreCase))
+    {
+        RequestFlag(Flag.Yellow);
+        return;
+    }
+
+    if (argument.Equals("FLAG_R", StringComparison.InvariantCultureIgnoreCase))
+    {
+        RequestFlag(Flag.Red);
+        return;
+    }
+}
+
+private void ChangeTyres(TyreCompound compound)
+{
+    if (!_isPitLimiterActive || _mainController.GetShipSpeed() > 1)
+    {
+        return;
+    }
+
+    SetTyres(compound);
+    SaveState(true);
+}
+
+private void SetTyres(TyreCompound compound)
+{
+    switch (compound)
+    {
+        case TyreCompound.Ultra:
+            _currentTyres = Tyre.NewUltras();
+            break;
+
+        case TyreCompound.Soft:
+            _currentTyres = Tyre.NewSofts();
+            break;
+
+        case TyreCompound.Medium:
+            _currentTyres = Tyre.NewMediums();
+            break;
+
+        case TyreCompound.Hard:
+            _currentTyres = Tyre.NewHards();
+            break;
+
+        case TyreCompound.Extra:
+            _currentTyres = Tyre.NewExtras();
+            break;
+
+        case TyreCompound.Intermediate:
+            _currentTyres = Tyre.NewIntermediates();
+            break;
+
+        case TyreCompound.Wet:
+            _currentTyres = Tyre.NewWets();
+            break;
+
+        default:
+            break;
+    }
+
+    SetBrakelightColor(_currentTyres.Color);
+
+    foreach (var s in _suspensions)
+    {
+        s.ApplyAction("Add Top Part");
+        s.Friction = _currentTyres.MaxFriction;
+    }
+}
+
+private void SetBrakelightColor(Color color)
+{
+    foreach (var l in _brakelights)
+    {
+        l.Color = color;
+        l.BlinkIntervalSeconds = 0;
+    }
+
+    foreach (var l in _tyreLights)
+    {
+        if (l.IsSameConstructAs(Me))
+        {
+            l.Color = color;
+            l.BlinkIntervalSeconds = 0;
+        }
+    }
+}
+
+private void SetSpeedLimit(float metersPerSecond)
+{
+    foreach (var s in _suspensions)
+    {
+        s.SetValueFloat("Speed Limit", metersPerSecond * 3.6f);
+    }
+}
+
+private void SaveState(bool force = false)
+{
+    _saveStateCooldown -= (int)(_delta * 1000);
+
+    if (!force && _saveStateCooldown > 0)
+    {
+        return;
+    }
+
+    var tyreChar = _currentTyres.Symbol;
+
+    Me.CustomData = $"{tyreChar};{_currentTyres.WearPercentage};{_ersCharge}";
+    _saveStateCooldown = SAVE_STATE_COOLDOWN;
+}
+
+private string GetCurrentFlagName()
+{
+    var flagName = string.Empty;
+
+    switch (_data.CurrentFlag)
+    {
+        case Flag.Blue: flagName = "Blue"; break;
+        case Flag.Green: flagName = "Green"; break;
+        case Flag.Red: flagName = "Red"; break;
+        case Flag.Yellow: flagName = "Yellow"; break;
+    }
+
+    return flagName;
+}
+
+private Color GetCurrentFlagColor()
+{
+    var color = Color.Black;
+
+    switch (_data.CurrentFlag)
+    {
+        case Flag.Blue: color = Color.Blue; break;
+        case Flag.Green: color = Color.Green; break;
+        case Flag.Red: color = Color.Red; break;
+        case Flag.Yellow: color = Color.Yellow; break;
+    }
+
+    return color;
+}
+
+private string BuildErsBar()
+{
+    const int barLength = 6;
+    var arrow = _isErsActive
+        ? ARROW_DOWN_CHAR
+        : _ersCharge < 1
+            ? ARROW_UP_CHAR
+            : '-';
+
+    var ersBar = arrow + "E:";
+
+    for (int i = 0; i < barLength; i++)
+    {
+        var factor = 1f / barLength;
+
+        if (_ersCharge > factor * i)
+        {
+            if (_ersCharge < factor * (i + 1))
+            {
+                ersBar += BLOCK_HALF_CHAR;
+                continue;
+            }
+
+            ersBar += BLOCK_FILLED_CHAR;
+        }
+        else
+        {
+            ersBar += BLOCK_EMPTY_CHAR;
+        }
+    }
+
+    return ersBar;
+}
+
+private string[] BuildVerticalBar(char title, int length, float currentValue, float maxValue)
+{
+    var strBar = new string[length + 2];
+    strBar[0] = $"┌{title}┐";
+
+    var perc = Math.Floor(100 * currentValue / maxValue);
+
+    for (int i = 1; i < strBar.Length - 1; i++)
+    {
+        var mult = i - 1;
+        var factor = 100f / length;
+        var position = strBar.Length - 1 - i;
+
+        if (perc > factor * mult)
+        {
+            if (perc < factor * (mult + 1))
+            {
+                strBar[position] = $"│{BLOCK_HALF_CHAR}│";
+
+                continue;
+            }
+
+            strBar[position] = $"│{BLOCK_FILLED_CHAR}│";
+        }
+        else
+        {
+            strBar[position] = $"│{BLOCK_EMPTY_CHAR}│";
+        }
+    }
+
+    strBar[strBar.Length - 1] = perc < 100 ? $"{perc + "%",3}" : $"{perc}";
+
+    return strBar;
+}
+
+private void RequestFlag(Flag flag)
+{
+    if (_address <= 0)
+    {
+        return;
+    }
+
+    IGC.SendUnicastMessage(_address, "Flag", $"{(int)flag}");
+}
+
+private float GetWheelPower()
+{
+    if (_isPitLimiterActive)
+    {
+        return 20f;
+    }
+
+    if (_isDrafting || _isErsActive)
+    {
+        return 100f;
+    }
+
+    return DEFAULT_SUSPENSION_POWER;
+}
+
+private float GetWheelSpeedLimit()
+{
+    if (_isPitLimiterActive)
+    {
+        return 26;
+    }
+
+    if (_data.CurrentFlag == Flag.Yellow)
+    {
+        return 45;
+    }
+
+    if (_isDrafting)
+    {
+        return 999;
+    }
+
+    if (_isErsActive)
+    {
+        return 98f;
+    }
+
+    return DEFAULT_SUSPENSION_SPEED_LIMIT;
+}
+
+private IMyMotorSuspension GetSuspension(SuspensionPosition pos)
+{
+    return _suspensions[(int)pos];
+}
+
+private void SetSuspension(SuspensionPosition pos, IMyMotorSuspension suspension)
+{
+    if (suspension == null)
+    {
+        return;
+    }
+
+    _suspensions[(int)pos] = suspension;
+}
+
+private void SetPropulsionOverride(float value)
+{
+    var susFl = GetSuspension(SuspensionPosition.FrontLeft);
+    var susFr = GetSuspension(SuspensionPosition.FrontRight);
+    var susRl = GetSuspension(SuspensionPosition.RearLeft);
+    var susRr = GetSuspension(SuspensionPosition.RearRight);
+
+    susFl.PropulsionOverride = value;
+    susFr.PropulsionOverride = -value;
+    susRl.PropulsionOverride = value;
+    susRr.PropulsionOverride = -value;
+}
+
+private float GetMirrorProximity(IMySensorBlock mirrorSensor)
+{
+    if (mirrorSensor == null || mirrorSensor.Closed || !mirrorSensor.IsActive)
+    {
+        return float.MaxValue;
+    }
+
+    _mirrorAuxList.Clear();
+    mirrorSensor.DetectedEntities(_mirrorAuxList);
+
+    if (_mirrorAuxList.Count <= 0)
+    {
+        return float.MaxValue;
+    }
+
+    var pos = Me.CubeGrid.GetPosition();
+    var nearest = _mirrorAuxList.Select(x => Vector3.Distance(pos, x.Position))
+        .Min();
+
+    return nearest;
+}
+
+private string GetMirrorProximityArrows(bool isRightMirror)
+{
+    var prox = GetMirrorProximity(isRightMirror ? _mirrorRight : _mirrorLeft);
+
+    if (prox == float.MaxValue)
+    {
+        return string.Empty;
+    }
+
+    var arrow = isRightMirror ? ARROW_RIGHT : ARROW_LEFT;
+
+    if (prox < 15)
+    {
+        return $"{arrow}{arrow}{arrow}";
+    }
+
+    if (prox < 30)
+    {
+        return $"{arrow}{arrow}";
+    }
+
+    return $"{arrow}";
+}
+
+private char GetSectorStatusChar(LapSectorStatus sectorStatus)
+{
+    switch (sectorStatus)
+    {
+        case LapSectorStatus.NotSet: return _spinnerAnim.CurrentChar;
+        case LapSectorStatus.Worse: return '-';
+        case LapSectorStatus.Better: return '+';
+        case LapSectorStatus.Best: return '*';
+        default: return _spinnerAnim.CurrentChar;
+    }
+}
+
+private Color GetSectorStatusColor(LapSectorStatus sectorStatus)
+{
+    switch (sectorStatus)
+    {
+        case LapSectorStatus.NotSet: return Color.White;
+        case LapSectorStatus.Worse: return Color.Yellow;
+        case LapSectorStatus.Better: return Color.Lime;
+        case LapSectorStatus.Best: return Color.Magenta;
+        default: return Color.White;
+    }
+}
+
+private string CentralizeString(string text, int width)
+{
+    if (text.Length > width)
+    {
+        return text.Substring(0, width);
+    }
+
+    var spaceLeft = width - text.Length;
+    var leftSide = (int)Math.Floor((float)spaceLeft / 2);
+    var rightSide = (int)Math.Ceiling((float)spaceLeft / 2);
+
+    var strBuilder = new StringBuilder(text);
+
+    strBuilder.Insert(0, " ", leftSide);
+    strBuilder.Append(' ', rightSide);
+
+    return strBuilder.ToString();
+}
+private class CharacterAnimation
+{
+    private char[] _frames;
+    private int _cooldown;
+
+    public int CurrentFrame { get; private set; }
+
+    public char CurrentChar
+    {
+        get
+        {
+            return _frames[CurrentFrame];
+        }
+    }
+
+    public int FrameCount { get; }
+
+    public int FrameTimeMilliseconds { get; set; }
+
+    public CharacterAnimation(char[] frames, int frameTime)
+    {
+        _frames = frames;
+        FrameCount = frames.Length;
+        FrameTimeMilliseconds = frameTime;
+    }
+
+    public void Update(float delta)
+    {
+        var deltaMillis = (int)(delta * 1000);
+        _cooldown += deltaMillis;
+
+        if (_cooldown >= FrameTimeMilliseconds)
+        {
+            CurrentFrame++;
+
+            if (CurrentFrame == FrameCount)
+            {
+                CurrentFrame = 0;
+            }
+
+            _cooldown -= FrameTimeMilliseconds;
+        }
+    }
+
+    public override string ToString()
+    {
+        return $"{CurrentChar}";
+    }
+}
+private enum Flag
+{
+    Green,
+    Yellow,
+    Red,
+    Blue
+}
+private class RaceData
+{
+    public int Position { get; set; }
+    public int TotalRacers { get; set; }
+    public int Laps { get; set; }
+    public int TotalLaps { get; set; }
+    public string CurrentLapTime { get; set; } = "--:--.---";
+    public string BestLapTime { get; set; } = "--:--.---";
+    public Flag CurrentFlag { get; set; }
+    public WeatherLevel CurrentWeather { get; set; }
+    public string RankTable { get; set; }
+    public LapSectorStatus StatusS1 { get; set; }
+    public LapSectorStatus StatusS2 { get; set; }
+    public LapSectorStatus StatusS3 { get; set; }
+    public string PrevLapTime { get; set; } = "--:--.---";
+
+    public void Map(string data)
+    {
+        try
+        {
+            var values = data.Split(';');
+
+            Laps = Convert.ToInt32(values[0]);
+            Position = Convert.ToInt32(values[1]);
+            CurrentLapTime = values[2];
+            BestLapTime = values[3];
+            TotalRacers = Convert.ToInt32(values[4]);
+            TotalLaps = Convert.ToInt32(values[5]);
+            CurrentFlag = (Flag)Convert.ToInt32(values[6]);
+            CurrentWeather = (WeatherLevel)Convert.ToInt32(values[7]);
+            RankTable = values[8];
+            StatusS1 = (LapSectorStatus)Convert.ToInt32(values[9]);
+            StatusS2 = (LapSectorStatus)Convert.ToInt32(values[10]);
+            StatusS3 = (LapSectorStatus)Convert.ToInt32(values[11]);
+            PrevLapTime = values[12];
+        }
+        catch (Exception) { }
+    }
+}
+private enum LapSectorStatus
+{
+    NotSet,
+    Worse,
+    Better,
+    Best
+}
+private enum SuspensionPosition
+{
+    FrontRight,
+    FrontLeft,
+    RearRight,
+    RearLeft
+}
+private class Tyre
+{
+    private readonly float _wearFactor;
+
+    public char Symbol { get; private set; }
+
+    public float CurrentFriction { get { return CalculateCurrentFriction(); } }
+
+    public float MaxFriction { get; private set; }
+
+    public float MinFriction { get; private set; }
+
+    public float WearPercentage { get; private set; }
+
+    public int Lifespan { get; private set; }
+
+    public bool IsSlick { get; private set; }
+
+    public Color Color { get; private set; }
+
+    private Tyre(int lifespan, float maxFriction, float minFriction, char symbol, Color color, bool isSlick = true)
+    {
+        Lifespan = lifespan;
+        MaxFriction = maxFriction;
+        MinFriction = minFriction;
+        Symbol = symbol;
+        Color = color;
+        IsSlick = isSlick;
+        WearPercentage = 1f;
+
+        _wearFactor = 1f / (60 * Lifespan);
+    }
+
+    public void Update(IMyShipController mainController, IMyMotorSuspension[] suspensions,
+        List<IMyLightingBlock> brakelights, List<IMyLightingBlock> tyreLights, RaceData data, float delta)
+    {
+        var speed = mainController.GetShipSpeed();
+
+        if (speed < 1)
+        {
+            return;
+        }
+
+        var speedFactor = (float)MathHelper.Clamp(speed, 0, 90) / 90;
+        var wearRate = _wearFactor * speedFactor * delta;
+
+        WearPercentage -= wearRate * GetTyreWeariness(data.CurrentWeather);
+        WearPercentage = MathHelper.Clamp(WearPercentage, 0, 1f);
+
+        foreach (var s in suspensions)
+        {
+            s.Friction = CurrentFriction * GetTyreEfficiency(data.CurrentWeather);
+        }
+
+        if (WearPercentage <= 0.25f)
+        {
+            if (brakelights.Any(l => l.BlinkIntervalSeconds <= 0))
+            {
+                foreach (var l in brakelights)
+                {
+                    l.BlinkIntervalSeconds = 0.25f;
+                }
+            }
+
+            if (tyreLights.Any(l => l.BlinkIntervalSeconds <= 0))
+            {
+                foreach (var l in tyreLights)
+                {
+                    l.BlinkIntervalSeconds = 0.25f;
+                }
+            }
+        }
+        else
+        {
+            if (brakelights.Any(l => l.BlinkIntervalSeconds > 0))
+            {
+                foreach (var l in brakelights)
+                {
+                    l.BlinkIntervalSeconds = 0f;
+                }
+            }
+
+            if (tyreLights.Any(l => l.BlinkIntervalSeconds > 0))
+            {
+                foreach (var l in tyreLights)
+                {
+                    l.BlinkIntervalSeconds = 0f;
+                }
+            }
+        }
+
+        if (CurrentFriction <= MinFriction)
+        {
+            if (suspensions.All(s => s.IsAttached))
+            {
+                var rand = new Random().Next(4);
+                suspensions[rand].Detach();
+            }
+        }
+    }
+
+    public static Tyre Load(char compoundSymbol, float wearPercentage)
+    {
+        Tyre result;
+
+        switch (compoundSymbol)
+        {
+            case 'U': result = NewUltras(); break;
+            case 'S': result = NewSofts(); break;
+            case 'M': result = NewMediums(); break;
+            case 'H': result = NewHards(); break;
+            case 'X': result = NewExtras(); break;
+            case 'I': result = NewIntermediates(); break;
+            case 'W': result = NewWets(); break;
+            default: result = NewSofts(); break;
+        }
+
+        result.WearPercentage = wearPercentage;
+
+        return result;
+    }
+
+    public static Tyre NewUltras()
+    {
+        return new Tyre(5, 100, 80, 'U', new Color(192, 0, 255));
+    }
+
+    public static Tyre NewSofts()
+    {
+        return new Tyre(8, 100, 40, 'S', Color.Red);
+    }
+
+    public static Tyre NewMediums()
+    {
+        return new Tyre(13, 75, 40, 'M', Color.Yellow);
+    }
+
+    public static Tyre NewHards()
+    {
+        return new Tyre(21, 60, 40, 'H', Color.White);
+    }
+
+    public static Tyre NewExtras()
+    {
+        return new Tyre(34, 55, 40, 'X', new Color(255, 32, 0));
+    }
+
+    public static Tyre NewIntermediates()
+    {
+        return new Tyre(8, 60, 35, 'I', Color.Green, false);
+    }
+
+    public static Tyre NewWets()
+    {
+        return new Tyre(13, 50, 35, 'W', new Color(0, 16, 255), false);
+    }
+
+    private float GetTyreEfficiency(WeatherLevel weatherLevel)
+    {
+        switch (weatherLevel)
+        {
+            case WeatherLevel.Clear:
+            case WeatherLevel.LightClouds:
+            case WeatherLevel.Cloudy:
+            case WeatherLevel.Overcast:
+                return 1;
+            case WeatherLevel.Drizzle:
+                return IsSlick ? 0.75f : 1;
+            case WeatherLevel.Rain:
+                return IsSlick ? 0.5f : 1;
+            case WeatherLevel.HeavyRain:
+                return IsSlick ? 0.25f : (Symbol == 'I' ? 0.8f : 1);
+            default:
+                return 1;
+        }
+    }
+
+    private float GetTyreWeariness(WeatherLevel weatherLevel)
+    {
+        switch (weatherLevel)
+        {
+            case WeatherLevel.Clear:
+                return IsSlick ? 1 : (Symbol == 'W' ? 1.5f : 1.25f);
+            case WeatherLevel.LightClouds:
+                return IsSlick ? 1 : (Symbol == 'W' ? 1.5f : 1.25f);
+            case WeatherLevel.Cloudy:
+                return IsSlick ? 1 : (Symbol == 'W' ? 1.25f : 1);
+            case WeatherLevel.Overcast:
+            case WeatherLevel.Drizzle:
+            case WeatherLevel.Rain:
+            case WeatherLevel.HeavyRain:
+            default:
+                return 1;
+        }
+    }
+
+    private float CalculateCurrentFriction()
+    {
+        var rad = MathHelper.ToRadians(90 - WearPercentage * 90);
+        return MaxFriction - ((MaxFriction - MinFriction) * (float)Math.Sin(rad));
+    }
+}
+private enum TyreCompound
+{
+    Ultra,          //100% ~5 minutes
+    Soft,           //100% ~8 minutes
+    Medium,         //75%  ~13 minutes
+    Hard,           //60%  ~21 minutes
+    Extra,          //55%  ~34 minutes
+    Intermediate,   //60%  ~8  minutes
+    Wet             //50%  ~21 minutes
+}
+private class Weather
+{
+    private static Color ClearColor = new Color(255, 106, 0);
+    private static Color LightCloudsColor = new Color(255, 233, 127);
+    private static Color CloudyColor = new Color(255, 244, 191);
+    private static Color OvercastColor = Color.White;
+    private static Color DrizzleColor = new Color(127, 202, 255);
+    private static Color RainColor = new Color(0, 148, 255);
+    private static Color HeavyRainColor = Color.Blue;
+
+    private const float WEATHER_UPDATE_TIME = 60000;
+    private readonly WeatherLevel _initialLevel;
+    private readonly int[][] _changeChances;
+    private readonly Random _random;
+    private float _time;
+
+    public WeatherLevel Level { get; private set; }
+
+    public bool Enabled { get; set; }
+
+    public string Description
+    {
+        get { return GetWeatherDescription(Level); }
+    }
+
+    public Weather(WeatherLevel initialLevel = WeatherLevel.Clear)
+    {
+        _time = WEATHER_UPDATE_TIME;
+        _changeChances = new int[][]
+        {
+            new int[] { 0,  60 },
+            new int[] { 50, 30 },
+            new int[] { 50, 20 },
+            new int[] { 40, 40 },
+            new int[] { 20, 50 },
+            new int[] { 30, 50 },
+            new int[] { 50,  0 },
+        };
+
+        _random = new Random();
+        _initialLevel = initialLevel;
+        Level = _initialLevel;
+    }
+
+    public void Update(float delta)
+    {
+        if (!Enabled)
+        {
+            Level = WeatherLevel.Clear;
+            return;
+        }
+
+        _time -= (delta);
+
+        if (_time <= 0)
+        {
+            ChangeLevel();
+            _time += WEATHER_UPDATE_TIME;
+        }
+    }
+
+    private void ChangeLevel()
+    {
+        var currentLevel = (int)Level;
+        var chanceArray = _changeChances[currentLevel + 3];
+        var downChance = chanceArray[0] / 10;
+        var upChance = 11 - chanceArray[1] / 10;
+
+        var roll = _random.Next(10) + 1;
+
+        if (roll <= downChance)
+        {
+            currentLevel--;
+        }
+        else if (roll >= upChance)
+        {
+            currentLevel++;
+        }
+
+        Level = (WeatherLevel)MathHelper.Clamp(currentLevel, -3, 3);
+    }
+
+    public static string GetWeatherDescription(WeatherLevel weatherLevel)
+    {
+        switch (weatherLevel)
+        {
+            case WeatherLevel.Clear:
+                return "Clear";
+
+            case WeatherLevel.LightClouds:
+                return "L. Clouds";
+
+            case WeatherLevel.Cloudy:
+                return "Cloudy";
+
+            case WeatherLevel.Overcast:
+                return "Overcast";
+
+            case WeatherLevel.Drizzle:
+                return "Drizzle";
+
+            case WeatherLevel.Rain:
+                return "Rain";
+
+            case WeatherLevel.HeavyRain:
+                return "H. Rain";
+
+            default:
+                return string.Empty;
+        }
+    }
+
+    public static Color GetWeatherColor(WeatherLevel weatherLevel)
+    {
+        switch (weatherLevel)
+        {
+            case WeatherLevel.Clear:
+                return ClearColor;
+
+            case WeatherLevel.LightClouds:
+                return LightCloudsColor;
+
+            case WeatherLevel.Cloudy:
+                return CloudyColor;
+
+            case WeatherLevel.Overcast:
+                return OvercastColor;
+
+            case WeatherLevel.Drizzle:
+                return DrizzleColor;
+
+            case WeatherLevel.Rain:
+                return RainColor;
+
+            case WeatherLevel.HeavyRain:
+                return HeavyRainColor;
+
+            default:
+                return Color.White;
+        }
+    }
+}
+
+private enum WeatherLevel
+{
+    Clear = -3,
+    LightClouds = -2,
+    Cloudy = -1,
+    Overcast = 0,
+    Drizzle = 1,
+    Rain = 2,
+    HeavyRain = 3
+}
