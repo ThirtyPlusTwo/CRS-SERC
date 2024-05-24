@@ -59,6 +59,10 @@ In order to change wheels, you have to go to the pits with the Pit Limiter activ
 
 ![alt text](https://i.imgur.com/VcXzB4R.png)
 
+And here's a chart on how they degrade:
+
+![alt text](https://i.imgur.com/uoOb3gc.png)
+
 **Note: For now, the drive style won't matter too much on the tyre degradation rate, it will be pretty similar for everyone. The degradation rate is only based on current speed (even if the wheels are not touching the ground): the faster you go, the faster your tyre will degrade. (At 90m/s it reaches the maximum rate)**
 
 ## FAQ
