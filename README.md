@@ -57,7 +57,7 @@ Wheels are going to have less friction over time, affecting the overall performa
 
 In order to change wheels, you have to go to the pits with the Pit Limiter active and fully stop your car. Then you will be able to switch tyres using the arguments: ULTRA, SOFT, MEDIUM, HARD, EXTRA, INT, WET. Notice that once you change tyres, the Tyre Wear % changes to 100%, and a letter going to be displayed reprsenting the selected compound (U, S, M, H, X, I, W) and your Brakelight will change color, making your current compound visible to others. The image below show the specs for each compound type:
 
-![alt text](https://i.imgur.com/AWQ4lpc.png)
+![alt text](https://i.imgur.com/VcXzB4R.png)
 
 **Note: For now, the drive style won't matter too much on the tyre degradation rate, it will be pretty similar for everyone. The degradation rate is only based on current speed (even if the wheels are not touching the ground): the faster you go, the faster your tyre will degrade. (At 90m/s it reaches the maximum rate)**
 
