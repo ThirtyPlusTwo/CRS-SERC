@@ -1,3 +1,4 @@
+
 private readonly string TEAM_TAG = "XXX";                               //Your Team Tag (3 chracters), if you are not in a team yet, keep this as it is.
 private readonly string DRIVER_NAME = "Guest";                          //Your name
 private readonly int DRIVER_NUMBER = 99;                                //Your number (0-99)
@@ -19,7 +20,7 @@ private const string RANK_DISPLAY_HUDLCD = "hudlcd:0.45:0.9:1:White:1";
     
 //************ DO NOT MODIFY BELLOW HERE ************
 
-private readonly string CODE_VERSION = "13.0.0";
+private readonly string CODE_VERSION = "13.1.0";
 private const int CONNECTION_TIMEOUT = 3000;
 private const int SAVE_STATE_COOLDOWN = 1000;
 private const int DRAFTING_COOLDOWN = 1000;
@@ -286,9 +287,7 @@ private void UpdateDisplays()
     _stringBuilder.Clear();
 
     const int DISPLAY_WIDTH = 21;
-    const int DISPLAY_HEIGHT = 8;
     const int INNER_DISPLAY_WIDTH = DISPLAY_WIDTH - 6;
-    var charBuffer = new char[DISPLAY_WIDTH, DISPLAY_HEIGHT];
     var speed = _mainController.GetShipSpeed();
     var tyreCompoundIndicator = _currentTyres.Symbol;
     var strSpeed = $"{Math.Floor(speed)}m/s";
@@ -1400,7 +1399,7 @@ private float GetWheelSpeedLimit()
 
     if (_isErsActive)
     {
-        return 98f;
+        return 97f;
     }
 
     return DEFAULT_SUSPENSION_SPEED_LIMIT;
@@ -1524,7 +1523,7 @@ private string CentralizeString(string text, int width)
 }
 private class CharacterAnimation
 {
-    private char[] _frames;
+    private readonly char[] _frames;
     private int _cooldown;
 
     public int CurrentFrame { get; private set; }
@@ -1760,32 +1759,32 @@ private class Tyre
 
     public static Tyre NewSofts()
     {
-        return new Tyre(8, 100, 40, 'S', Color.Red);
+        return new Tyre(8, 100, 45, 'S', Color.Red);
     }
 
     public static Tyre NewMediums()
     {
-        return new Tyre(13, 75, 40, 'M', Color.Yellow);
+        return new Tyre(13, 75, 45, 'M', Color.Yellow);
     }
 
     public static Tyre NewHards()
     {
-        return new Tyre(21, 60, 40, 'H', Color.White);
+        return new Tyre(21, 60, 45, 'H', Color.White);
     }
 
     public static Tyre NewExtras()
     {
-        return new Tyre(34, 55, 40, 'X', new Color(255, 32, 0));
+        return new Tyre(34, 55, 45, 'X', new Color(255, 32, 0));
     }
 
     public static Tyre NewIntermediates()
     {
-        return new Tyre(8, 60, 35, 'I', Color.Green, false);
+        return new Tyre(8, 60, 40, 'I', Color.Green, false);
     }
 
     public static Tyre NewWets()
     {
-        return new Tyre(13, 50, 35, 'W', new Color(0, 16, 255), false);
+        return new Tyre(13, 50, 40, 'W', new Color(0, 16, 255), false);
     }
 
     private float GetTyreEfficiency(WeatherLevel weatherLevel)
@@ -1813,13 +1812,15 @@ private class Tyre
         switch (weatherLevel)
         {
             case WeatherLevel.Clear:
-                return IsSlick ? 1 : (Symbol == 'W' ? 1.5f : 1.25f);
+                return IsSlick ? 1 : (Symbol == 'W' ? 2f : 1.25f);
             case WeatherLevel.LightClouds:
-                return IsSlick ? 1 : (Symbol == 'W' ? 1.5f : 1.25f);
+                return Symbol == 'W' ? 1.8f : 1;
             case WeatherLevel.Cloudy:
-                return IsSlick ? 1 : (Symbol == 'W' ? 1.25f : 1);
+                return Symbol == 'W' ? 1.6f : 1;
             case WeatherLevel.Overcast:
+                return Symbol == 'W' ? 1.4f : 1;
             case WeatherLevel.Drizzle:
+                return Symbol == 'W' ? 1.2f : 1;
             case WeatherLevel.Rain:
             case WeatherLevel.HeavyRain:
             default:
@@ -1841,7 +1842,7 @@ private enum TyreCompound
     Hard,           //60%  ~21 minutes
     Extra,          //55%  ~34 minutes
     Intermediate,   //60%  ~8  minutes
-    Wet             //50%  ~21 minutes
+    Wet             //50%  ~13 minutes
 }
 private class Weather
 {
