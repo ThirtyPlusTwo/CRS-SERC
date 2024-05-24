@@ -1,6 +1,6 @@
 # CRS-F1 - Cratera's Racing System (for Space Engineers)
 
-### Version 13.0.0
+### Version 13.1.0
 - Pit Limiter
 - Drag Reduction System (DRS)
 - Energy Recovery System (ERS)
@@ -66,10 +66,10 @@ In order to change wheels, you have to go to the pits with the Pit Limiter activ
   - It sets the strength of all your suspensions to 100% while active, which allows your car to reach 100m/s. But be careful, it might only be good to use on long straights, and bumpy surfaces might put your car in the air while DRS is active.
   
 - **How does the ERS work?**
-  - It sets the power of all your suspensions to 100% and overclocks it while active, which gives more acceleration to your car consuming the ERS charge. When deactivated, it will recharge the ERS while moving.
+  - It sets the power of all your suspensions to 100%, overclocks it and increase the top speed while active, consuming the ERS charge when you push the throttle. When deactivated, it will recharge the ERS while moving.
   
 - **How does the Drafting System work?**
-  - When you're behind another car (detected by the Drafting Sensor) and it is above 70m/s, your car starts to draft: your suspensions gets 100% wheel power and your speed limit is set to unlimited. It remains active for a little while after moving for the overtake.
+  - When you're behind another car (detected by the Drafting Sensor) and it is above 70m/s (and you're above 50m/s), your car starts to draft: your suspensions gets 100% wheel power and your speed limit is set to unlimited. It remains active for a little while after moving for the overtake.
   
 - **Do I need to setup CRS-F1 script on my car to be detected by the race control script?"**
   - No, once you cross the start line you are being tracked. But in order to see your onboard race data, use commands and have the tyre degradation effect on your car, you need to set up this script on your car.
@@ -78,4 +78,4 @@ In order to change wheels, you have to go to the pits with the Pit Limiter activ
   - No, unless you turn off your Programable Block (which would be cheating during a race). Make sure to change your tyres before it's too late.
 
 - **Why these values for the tyres?**
-  - The lifespans are based on the Fibonacci sequence, notice that if you sum the lifespan of SOFT + MEDIUM = HARD, this allow a good variety of strategies on the races. Also, the friction ranges are planned in a way so all the compounds have 20% of the lifespan bellow 50% friction (we call it the Anchor), so people can optionally push the wheels to the limit even if they are getting a low performance.
+  - The lifespans are based on the Fibonacci sequence, notice that if you sum the lifespan of SOFT + MEDIUM = HARD, this allows a good variety of strategies on the races.
