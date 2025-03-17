@@ -1,13 +1,19 @@
-
-private readonly string TEAM_TAG = "XXX";                               //Your Team Tag (3 chracters), if you are not in a team yet, keep this as it is.
+private readonly string CLASS_TAG = "TC";                               //EX, PR, or GT
 private readonly string DRIVER_NAME = "Guest";                          //Your name
 private readonly int DRIVER_NUMBER = 99;                                //Your number (0-99)
-private const float DEFAULT_SUSPENSION_STRENGTH_F = 20f;                //Setup your default front suspensions strength
-private const float DEFAULT_SUSPENSION_STRENGTH_R = 20f;                //Setup your default rear suspensions strength
+private const float DEFAULT_SUSPENSION_STRENGTH_F = 20f;                //Setup your default front suspensions strength (does nothing if zero) 0 < x < 25
+private const float DEFAULT_SUSPENSION_STRENGTH_R = 20f;                //Setup your default rear suspensions strength (does nothing if zero) 0 < x < 25
+
+// For PR & EX, the rear angle is enabled and unlimited, for GT, the front angle is limited 0 < x < 36 and no rear steering
+private const bool DO_FRONT_ANGLE_CHANGE = false;
+private const float DEFAULT_FRONT_ANGLE = 36f;
+private const float HS_FRONT_ANGLE = 34f;
+private const float DEFAULT_TO_HS_CHANGE_SPEED = 80f;
+
+private const float ANTI_CLANG_FRICTION = 10f;                          //Limited between 0 and 20
+
 private const string DISPLAY_NAME = "Driver LCD";
 private const string BRAKELIGHT_GROUP_NAME = "Brakelight";
-private const string DRS_LIGHTS_GROUP_NAME = "DRS Lights";
-private const string ERS_LIGHTS_GROUP_NAME = "ERS Lights";
 private const string DRAFTING_SENSOR_NAME = "Drafting Sensor";
 private const string MIRROR_SENSOR_RIGHT_NAME = "Mirror Sensor Right";
 private const string MIRROR_SENSOR_LEFT_NAME = "Mirror Sensor Left";
@@ -18,14 +24,12 @@ private const string RANK_DISPLAY_NAME = "Rank LCD";                    //Option
 private const string TEXT_DISPLAY_HUDLCD = "hudlcd:-0.7:-0.35:0.9:White:1";
 private const string RANK_DISPLAY_HUDLCD = "hudlcd:0.45:0.9:1:White:1";
     
-//************ DO NOT MODIFY BELLOW HERE ************
+//************ DO NOT MODIFY BELOW HERE ************
 
-private readonly string CODE_VERSION = "13.1.0";
+private readonly string CODE_VERSION = "2.1.0";
 private const int CONNECTION_TIMEOUT = 3000;
 private const int SAVE_STATE_COOLDOWN = 1000;
-private const int DRAFTING_COOLDOWN = 1000;
-private const float DEFAULT_SUSPENSION_POWER = 80f;
-private const float DEFAULT_SUSPENSION_SPEED_LIMIT = 95f;
+private const int DRAFTING_COOLDOWN = 3000;
 private readonly char ARROW_DOWN_CHAR = '\u25BC';
 private readonly char ARROW_UP_CHAR = '\u25B2';
 private readonly char ARROW_RIGHT = '\u25BA';
@@ -33,7 +37,6 @@ private readonly char ARROW_LEFT = '\u25C4';
 private const char BLOCK_FILLED_CHAR = '\u2588';
 private const char BLOCK_HALF_CHAR = '\u2592';
 private const char BLOCK_EMPTY_CHAR = '\u2591';
-private const float ERS_PROPULSION_OVERRIDE = 1.7f;
 private bool _hasError;
 private IMyMotorSuspension[] _suspensions;
 private IMyShipController _mainController;
@@ -47,14 +50,11 @@ private IMySensorBlock _mirrorRight;
 private IMySensorBlock _mirrorLeft;
 private List<IMyGyro> _gyros;
 private bool _isPitLimiterActive;
-private bool _isDrsActive;
-private bool _isErsActive;
 private StringBuilder _stringBuilder;
 private RaceData _data;
 private List<IMyLightingBlock> _brakelights;
-private List<IMyLightingBlock> _ersLights;
-private List<IMyLightingBlock> _drsLights;
 private List<IMyLightingBlock> _tyreLights;
+private List<float> _draftingDistancesList = new List<float>();
 private Tyre _currentTyres;
 private long _address = -1;
 private IMyBroadcastListener _broadcastListener;
@@ -62,10 +62,14 @@ private int _connectionTimeout;
 private int _saveStateCooldown;
 private DateTime _lastTimeStamp;
 private float _delta;
-private float _ersCharge = 1f;
+private float _fuelAmount = 1f;
+private float _desiredFuel = 1f;
+private bool _isRefueling = false;
 private bool _isDrafting = false;
+private bool _isAntiClangActive = false;
 private int _draftingCooldown;
 private bool _doFlip;
+private RacingClass _CurrentClass;
 private List<MyDetectedEntityInfo> _mirrorAuxList;
 private List<MyDetectedEntityInfo> _draftingAuxList;
 private CharacterAnimation _spinnerAnim;
@@ -77,13 +81,13 @@ public Program()
 
     try
     {
+        SetupClass();
         SetupGridName();
         SetupController();
         SetupSuspensions();
+        SetupStrength();
         SetupDisplays();
         SetupBrakelights();
-        SetupErsLights();
-        SetupDrsLights();
         SetupAntenna();
         SetupMirrors();
         LoadState();
@@ -100,6 +104,25 @@ public Program()
 
     Runtime.UpdateFrequency = UpdateFrequency.Update1;
     _lastTimeStamp = DateTime.Now;
+}
+
+private void SetupClass() {
+    var classTag = CLASS_TAG.ToUpper().Trim();
+
+    switch (classTag) {
+        case "PR":
+            _CurrentClass = RacingClass.Prototype();
+            break;
+        case "GT":
+            _CurrentClass = RacingClass.GT();
+            break;
+        case "TC":
+            _CurrentClass = RacingClass.Touring();
+            break;
+        default:
+            _CurrentClass = RacingClass.Experimental();
+            break;
+    }
 }
 
 private void SetupMirrors()
@@ -156,21 +179,79 @@ public void Main(string argument, UpdateType updateSource)
     var currentTimeStamp = DateTime.Now;
     _delta = (float)(currentTimeStamp - _lastTimeStamp).TotalMilliseconds / 1000;
 
-    Echo($"Running CRS-F1 {CODE_VERSION}");
+    Echo($"Running CRS-Endurance v{CODE_VERSION}");
+    Echo($"Current Class: {_CurrentClass.ClassTag}");
 
     HandleArgument(argument);
-    UpdateDrs();
-    UpdateErs();
     UpdateFlagEffect();
     UpdatePitLimiter();
     UpdateDraftingSensor();
+    UpdateAngles();
     UpdateTyreDegradation();
+    UpdateAntiClang();
+    UpdateFuel();
     UpdateCommunication();
     UpdateDisplays();
     UpdateAntenna();
     UpdateGyros();
 
     _lastTimeStamp = currentTimeStamp;
+}
+
+private void UpdateFuel() {
+	var throttle = _mainController.MoveIndicator.Z < 0;
+	var speed = _mainController.GetShipSpeed();
+	var consumption = 1f;
+	
+	if (speed > 1) {
+		_isRefueling = false;
+		
+        _fuelAmount = (throttle) ? GoToValue(_fuelAmount, 0, consumption * (1f / (60 * 25)) * _delta) : _fuelAmount;
+		
+	} else if (_isPitLimiterActive && _isRefueling) {
+        _isRefueling = _fuelAmount != _desiredFuel;
+		_fuelAmount = GoToValue(_fuelAmount, _desiredFuel, (1f / 20) * _delta);
+	}
+	
+	_fuelAmount = MathHelper.Clamp(_fuelAmount, 0, 1);
+	
+	foreach (var s in _suspensions) {
+		s.Propulsion = _fuelAmount > 0;
+	}
+}
+
+private void UpdateAntiClang() {
+    if (!_isAntiClangActive) { return; }
+
+    foreach (var s in _suspensions) {
+        s.Friction = MathHelper.Clamp(ANTI_CLANG_FRICTION, 0f, 20f);
+    }
+}
+
+private void UpdateAngles() {
+    var fr = GetSuspension(SuspensionPosition.FrontRight);
+    var fl = GetSuspension(SuspensionPosition.FrontLeft);
+    var rr = GetSuspension(SuspensionPosition.RearRight);
+    var rl = GetSuspension(SuspensionPosition.RearLeft);
+    var carSpeed = _mainController.GetShipSpeed();
+
+    if (DO_FRONT_ANGLE_CHANGE) {
+        fr.MaxSteerAngle = (carSpeed >= DEFAULT_TO_HS_CHANGE_SPEED) ? HS_FRONT_ANGLE * 0.0174532925f : DEFAULT_FRONT_ANGLE * 0.0174532925f;
+        fl.MaxSteerAngle = (carSpeed >= DEFAULT_TO_HS_CHANGE_SPEED) ? HS_FRONT_ANGLE * 0.0174532925f : DEFAULT_FRONT_ANGLE * 0.0174532925f; 
+    }
+
+    if (_CurrentClass.ClassTag == "PR" || _CurrentClass.ClassTag == "EX") {
+        if (rr.Steering && rl.Steering) { return; }
+
+        rr.Steering = true;
+        rl.Steering = true;
+        return;
+    }
+
+    rr.MaxSteerAngle = 0;
+    rl.MaxSteerAngle = 0;
+    rr.Steering = false;
+    rl.Steering = false;
 }
 
 private void UpdateGyros()
@@ -219,7 +300,7 @@ private void UpdateFlagEffect()
             if (!_isPitLimiterActive)
             {
                 _mainController.HandBrake = false;
-                SetSpeedLimit(DEFAULT_SUSPENSION_SPEED_LIMIT);
+                SetSpeedLimit(_CurrentClass.DefaultSpeedLimit);
             }
             break;
     }
@@ -227,8 +308,6 @@ private void UpdateFlagEffect()
 
 private void UpdateYellowFlagEffect()
 {
-    _isDrsActive = false;
-    _isErsActive = false;
     _mainController.HandBrake = _mainController.GetShipSpeed() > 50;
 
     SetSpeedLimit(50f);
@@ -236,8 +315,6 @@ private void UpdateYellowFlagEffect()
 
 private void UpdateRedFlagEffect()
 {
-    _isDrsActive = false;
-    _isErsActive = false;
     _isPitLimiterActive = false;
     _mainController.HandBrake = true;
 }
@@ -291,14 +368,14 @@ private void UpdateDisplays()
     var speed = _mainController.GetShipSpeed();
     var tyreCompoundIndicator = _currentTyres.Symbol;
     var strSpeed = $"{Math.Floor(speed)}m/s";
-    var ersBar = BuildVerticalBar('E', 8, _ersCharge, 1);
+    var fuelBar = BuildVerticalBar('F', 8, _fuelAmount, 1);
     var tyreBar = BuildVerticalBar(tyreCompoundIndicator, 8, _currentTyres.WearPercentage, 1);
     var strWeather = $"<{Weather.GetWeatherDescription(_data.CurrentWeather)}>".ToUpper();
     var strWeatherLevelSlider = BuildWeatherLevelSlider(_data.CurrentWeather);
     var strWeatherLine1 = $"DRY         WET";
     var strWeatherLine2 = CentralizeString(strWeather, INNER_DISPLAY_WIDTH);
-    var controlLine = (_isDrsActive ? "DRS" : "   ") + " " +
-        (_isErsActive ? "ERS" : "   ") + " " +
+    var controlLine = " " +
+        (_isAntiClangActive ? "CLG" : "   ") + " " +
         (_isDrafting ? "DFT" : "   ") + " " +
         (_isPitLimiterActive ? "PIT" : "   ");
 
@@ -444,20 +521,20 @@ private void UpdateDisplays()
         percText.Size *= scale;
         frame.Add(percText);
 
-        //ERS Bar
-        icon = MySprite.CreateSprite("IconEnergy", new Vector2(256 - 22, 12 + 8 + 4), new Vector2(24));
-        icon.Color = Color.Cyan;
+        //Fuel Bar
+        icon = MySprite.CreateSprite("IconHydrogen", new Vector2(256 - 22, 12 + 8 + 4), new Vector2(24));
+        icon.Color = new Color(250, 200, 85);
 
         fillBg = MySprite.CreateSprite("SquareSimple", new Vector2(256 - 22, 106), new Vector2(18, 128));
         fillBg.Color = new Color(32, 32, 32);
 
         totalHeight = fillBg.Size.GetValueOrDefault().Y;
-        height = totalHeight * _ersCharge;
+        height = totalHeight * _fuelAmount;
 
         fill = MySprite.CreateSprite("SquareSimple", new Vector2(256 - 22, 42 + (totalHeight - height / 2)), new Vector2(18, height));
-        fill.Color = Color.Cyan;
+        fill.Color = new Color(250, 200, 85);
 
-        percText = MySprite.CreateText($"{Math.Floor(_ersCharge * 100)}%", "DEBUG", Color.White, textScale);
+        percText = MySprite.CreateText($"{Math.Floor(_fuelAmount * 100)}%", "DEBUG", Color.White, textScale);
         percText.Position = new Vector2(256 - 22, 176);
 
         icon.Position *= scale;
@@ -516,13 +593,13 @@ private void UpdateDisplays()
     lines[6] = $"    {strS1}  {strS2}  {strS3}    ";
     lines[7] = $"   DRY {strWeatherLevelSlider} WET   ";
 
-    var maxLines = Math.Max(lines.Length, Math.Max(tyreBar.Length, ersBar.Length));
+    var maxLines = Math.Max(lines.Length, Math.Max(tyreBar.Length, fuelBar.Length));
 
     for (int i = 0; i < maxLines; i++)
     {
         var prefix = i < tyreBar.Length ? tyreBar[i] : "   ";
         var inner = i < lines.Length ? lines[i].Substring(3, 15) : "               ";
-        var sufix = i < ersBar.Length ? ersBar[i] : "   ";
+        var sufix = i < fuelBar.Length ? fuelBar[i] : "   ";
 
         _stringBuilder.AppendLine($"{prefix}{inner}{sufix}");
     }
@@ -562,9 +639,9 @@ private void UpdatePitLimiter()
     {
         foreach (var s in _suspensions)
         {
-            s.Power = DEFAULT_SUSPENSION_POWER;
-            s.SetValueFloat("Speed Limit", DEFAULT_SUSPENSION_SPEED_LIMIT * 3.6f);
+            s.Power = _CurrentClass.GetPower(_fuelAmount, _isDrafting);
         }
+        SetSpeedLimit(_CurrentClass.DefaultSpeedLimit);
 
         return;
     }
@@ -579,85 +656,7 @@ private void UpdatePitLimiter()
     _mainController.HandBrake = speed > 24;
 }
 
-private void UpdateDrs()
-{
-    var isBreaking = _mainController.MoveIndicator.Z > 0
-        || _mainController.MoveIndicator.Y > 0
-        || _mainController.HandBrake;
 
-    if (isBreaking)
-    {
-        _isDrsActive = false;
-    }
-
-    var fr = GetSuspension(SuspensionPosition.FrontRight);
-    var fl = GetSuspension(SuspensionPosition.FrontLeft);
-    var rr = GetSuspension(SuspensionPosition.RearRight);
-    var rl = GetSuspension(SuspensionPosition.RearLeft);
-    var rate = (!_isDrsActive ? -150f : 150f) * _delta;
-
-    fr.Strength = MathHelper.Clamp(fr.Strength + rate, DEFAULT_SUSPENSION_STRENGTH_F, 100);
-    fl.Strength = MathHelper.Clamp(fl.Strength + rate, DEFAULT_SUSPENSION_STRENGTH_F, 100);
-    rr.Strength = MathHelper.Clamp(rr.Strength + rate, DEFAULT_SUSPENSION_STRENGTH_R, 100);
-    rl.Strength = MathHelper.Clamp(rl.Strength + rate, DEFAULT_SUSPENSION_STRENGTH_R, 100);
-
-    foreach (var l in _drsLights)
-    {
-        l.Color = _isDrsActive ? Color.Blue : Color.Black;
-        l.Enabled = _isDrsActive;
-    }
-}
-
-private void UpdateErs()
-{
-    if (_isPitLimiterActive)
-    {
-        _isErsActive = false;
-    }
-
-    var throttle = _mainController.MoveIndicator.Z < 0;
-    var speed = _mainController.GetShipSpeed();
-
-    const float rechargeRate = 1f / 135;
-    const float dischargeRate = 1f / 45;
-
-    if (speed >= 1)
-    {
-        if (!_isErsActive || (_isErsActive && !throttle))
-        {
-            var factor = (float)MathHelper.Clamp(speed / DEFAULT_SUSPENSION_SPEED_LIMIT, 0f, 1f);
-            _ersCharge += rechargeRate * factor * _delta;
-        }
-        else
-        {
-            var factor = 1;
-            _ersCharge -= dischargeRate * factor * _delta;
-        }
-    }
-
-    _ersCharge = MathHelper.Clamp(_ersCharge, 0, 1);
-
-    if (_ersCharge <= 0)
-    {
-        _isErsActive = false;
-    }
-
-    foreach (var s in _suspensions)
-    {
-        s.Power = GetWheelPower();
-    }
-
-    var speedLimit = GetWheelSpeedLimit();
-    SetSpeedLimit(speedLimit);
-
-    var propulsion = _isErsActive && throttle ? ERS_PROPULSION_OVERRIDE : 0;
-    SetPropulsionOverride(propulsion);
-
-    foreach (var l in _ersLights)
-    {
-        l.Color = _isErsActive ? Color.Cyan : Color.Black;
-    }
-}
 
 private void UpdateTyreDegradation()
 {
@@ -679,6 +678,7 @@ private void UpdateAntenna()
 private void UpdateDraftingSensor()
 {
     _draftingAuxList.Clear();
+	_draftingDistancesList.Clear();
 
     if (_draftingSensor == null || _draftingSensor.Closed)
     {
@@ -686,14 +686,28 @@ private void UpdateDraftingSensor()
         return;
     }
 
-    _draftingSensor.DetectedEntities(_draftingAuxList);
+    if (!_draftingSensor.Enabled) {
+        _isDrafting = false;
+        _draftingSensor.Enabled = true;
+        return;
+    }
 
-    var isBehindCar = _draftingAuxList.Any(x => !x.IsEmpty()
-        && x.Type == MyDetectedEntityType.SmallGrid
-        && !x.Name.Contains("Grid")
-        && x.Velocity.Length() >= 70);
+    _draftingSensor.DetectedEntities(_draftingAuxList);
+	Vector3D currentPosition = _mainController.GetPosition();
+	bool isBehindCar = false;
+	foreach (var item in _draftingAuxList) {
+		if (item.IsEmpty() || item.Type != MyDetectedEntityType.SmallGrid || item.Name.Contains("Grid") || item.Velocity.Length() < 70) { continue; }
+		
+		_draftingDistancesList.Add((float)VRageMath.Vector3D.Distance(item.Position, currentPosition));
+		isBehindCar = true;
+	}
+	_draftingDistancesList.Sort();
 
     var currentSpeed = _mainController.GetShipSpeed();
+    var currentDistance = 60f;
+    if (_draftingDistancesList.Count > 0) {
+        currentDistance = _draftingDistancesList[0];
+    }
 
     if (isBehindCar && currentSpeed >= 50)
     {
@@ -706,16 +720,16 @@ private void UpdateDraftingSensor()
     }
 
     _isDrafting = _draftingCooldown > 0;
+    _draftingCooldown -= (int)(_delta * 1000);
 
+    if (!_isDrafting) { return; }
     foreach (var s in _suspensions)
     {
         s.Power = GetWheelPower();
-        var speedLimit = GetWheelSpeedLimit();
+        var speedLimit = _CurrentClass.GetDraftingSpeed(currentDistance);
 
         s.SetValueFloat("Speed Limit", speedLimit * 3.6f);
     }
-
-    _draftingCooldown -= (int)(_delta * 1000);
 }
 
 private void SetupGridName()
@@ -725,18 +739,13 @@ private void SetupGridName()
         throw new Exception("DRIVER_NUMBER should be between 1 and 99");
     }
 
-    var teamTag = TEAM_TAG;
+    var classTag = _CurrentClass.ClassTag;
 
-    if (TEAM_TAG == string.Empty)
-    {
-        teamTag = "XXX";
-    }
-
-    teamTag = teamTag.Trim()
-        .Substring(0, 3)
+    classTag = classTag.Trim()
+        .Substring(0, 2)
         .ToUpper();
 
-    Me.CubeGrid.CustomName = $"{teamTag} #{DRIVER_NUMBER:00}-{DRIVER_NAME.Trim()}";
+    Me.CubeGrid.CustomName = $"{classTag} #{DRIVER_NUMBER:00}-{DRIVER_NAME.Trim()}";
 }
 
 private void SetupController()
@@ -800,6 +809,21 @@ private void SetupSuspensions()
             }
         }
     }
+}
+
+private void SetupStrength()
+{
+    var fr = GetSuspension(SuspensionPosition.FrontRight);
+    var fl = GetSuspension(SuspensionPosition.FrontLeft);
+    var rr = GetSuspension(SuspensionPosition.RearRight);
+    var rl = GetSuspension(SuspensionPosition.RearLeft);
+	
+    float frontStrength = Math.Abs(DEFAULT_SUSPENSION_STRENGTH_F);
+    fr.Strength = frontStrength;
+    fl.Strength = frontStrength;
+    float rearStrength = Math.Abs(DEFAULT_SUSPENSION_STRENGTH_R);
+    rr.Strength = rearStrength;
+    rl.Strength = rearStrength;
 }
 
 private void SetupDisplays()
@@ -871,13 +895,21 @@ private void SetupDisplays()
 private void SetupBrakelights()
 {
     var lights = new List<IMyLightingBlock>();
+    var group = GridTerminalSystem.GetBlockGroupWithName(BRAKELIGHT_GROUP_NAME);
 
-    GridTerminalSystem.GetBlockGroupWithName(BRAKELIGHT_GROUP_NAME)
-        .GetBlocksOfType<IMyLightingBlock>(lights, b => b.CubeGrid == Me.CubeGrid);
-
-    if (lights.Count <= 0)
+    if (group != null)
+    {
+        group.GetBlocksOfType<IMyLightingBlock>(lights, b => b.CubeGrid == Me.CubeGrid);
+        if (lights.Count <= 0)
+        {
+            throw new Exception($"No lights found in the \"{BRAKELIGHT_GROUP_NAME}\" group.");
+            return;
+        }
+    }
+    else
     {
         throw new Exception($"\"{BRAKELIGHT_GROUP_NAME}\" group not set.");
+        return;
     }
 
     _brakelights = new List<IMyLightingBlock>();
@@ -901,57 +933,13 @@ private void SetupBrakelights()
     }
 }
 
-private void SetupDrsLights()
-{
-    _drsLights = new List<IMyLightingBlock>();
-    var lights = new List<IMyTerminalBlock>();
-    var group = GridTerminalSystem.GetBlockGroupWithName(DRS_LIGHTS_GROUP_NAME);
-
-    if (group == null)
-    {
-        return;
-    }
-
-    group.GetBlocks(lights, b => b.CubeGrid == Me.CubeGrid);
-
-    foreach (var l in lights)
-    {
-        var light = (IMyLightingBlock)l;
-        _drsLights.Add(light);
-    }
-}
-
-private void SetupErsLights()
-{
-    _ersLights = new List<IMyLightingBlock>();
-    var lights = new List<IMyTerminalBlock>();
-    var group = GridTerminalSystem.GetBlockGroupWithName(ERS_LIGHTS_GROUP_NAME);
-
-    if (group == null)
-    {
-        return;
-    }
-
-    group.GetBlocks(lights, b => b.CubeGrid == Me.CubeGrid);
-
-    foreach (var l in lights)
-    {
-        var light = (IMyLightingBlock)l;
-        light.Radius = 4f;
-        light.Intensity = 10f;
-        light.BlinkLength = 50f;
-        light.BlinkIntervalSeconds = 0.5f;
-
-        _ersLights.Add(light);
-    }
-}
-
 private void SetupDraftingSensor()
 {
-    var sensor = (IMySensorBlock)GridTerminalSystem.GetBlockWithName(DRAFTING_SENSOR_NAME);
+    var sensor = GridTerminalSystem.GetBlockWithName(DRAFTING_SENSOR_NAME) as IMySensorBlock;
 
     if (sensor == null)
     {
+        throw new Exception($"\"{DRAFTING_SENSOR_NAME}\" not found.");
         return;
     }
 
@@ -1004,10 +992,10 @@ private void LoadState()
 
     var compoundChar = Convert.ToChar(values[0]);
     var wearPercentage = (float)Convert.ToDouble(values[1]);
-    var charge = (float)Convert.ToDouble(values[2]);
+    var fuel = (float)Convert.ToDouble(values[2]);
 
     _currentTyres = Tyre.Load(compoundChar, wearPercentage);
-    _ersCharge = charge;
+    _fuelAmount = fuel;
 }
 
 private void SetupAntenna()
@@ -1038,6 +1026,12 @@ private void SetupBroadcastListener()
 
 private void HandleArgument(string argument)
 {
+	if (argument.Equals("CLANG", StringComparison.InvariantCultureIgnoreCase))
+	{
+		_isAntiClangActive = !_isAntiClangActive;
+		return;
+	}
+	
     if (argument.Equals("LMT", StringComparison.InvariantCultureIgnoreCase))
     {
         _isPitLimiterActive = !_isPitLimiterActive;
@@ -1053,42 +1047,6 @@ private void HandleArgument(string argument)
     if (argument.Equals("LMT_OFF", StringComparison.InvariantCultureIgnoreCase))
     {
         _isPitLimiterActive = false;
-        return;
-    }
-
-    if (argument.Equals("DRS", StringComparison.InvariantCultureIgnoreCase))
-    {
-        _isDrsActive = !_isDrsActive;
-        return;
-    }
-
-    if (argument.Equals("DRS_ON", StringComparison.InvariantCultureIgnoreCase))
-    {
-        _isDrsActive = true;
-        return;
-    }
-
-    if (argument.Equals("DRS_OFF", StringComparison.InvariantCultureIgnoreCase))
-    {
-        _isDrsActive = false;
-        return;
-    }
-
-    if (argument.Equals("ERS", StringComparison.InvariantCultureIgnoreCase))
-    {
-        _isErsActive = !_isErsActive;
-        return;
-    }
-
-    if (argument.Equals("ERS_ON", StringComparison.InvariantCultureIgnoreCase))
-    {
-        _isErsActive = true;
-        return;
-    }
-
-    if (argument.Equals("ERS_OFF", StringComparison.InvariantCultureIgnoreCase))
-    {
-        _isErsActive = false;
         return;
     }
 
@@ -1157,6 +1115,19 @@ private void HandleArgument(string argument)
         RequestFlag(Flag.Red);
         return;
     }
+
+    string[] splitArgument = argument.Split(' ');
+    if (splitArgument[0].Trim().Equals("FUEL", StringComparison.InvariantCultureIgnoreCase)) {
+        if (!_isPitLimiterActive) { return; }
+        
+        _isRefueling = true;
+        _desiredFuel = 1f;
+        try { 
+            _desiredFuel = float.Parse(splitArgument[1]) / 100f;
+        }
+        catch (Exception e) {}
+        return;
+    }
 }
 
 private void ChangeTyres(TyreCompound compound)
@@ -1165,7 +1136,9 @@ private void ChangeTyres(TyreCompound compound)
     {
         return;
     }
-
+	
+    _isRefueling = true;
+    _desiredFuel = 1f;
     SetTyres(compound);
     SaveState(true);
 }
@@ -1252,7 +1225,7 @@ private void SaveState(bool force = false)
 
     var tyreChar = _currentTyres.Symbol;
 
-    Me.CustomData = $"{tyreChar};{_currentTyres.WearPercentage};{_ersCharge}";
+    Me.CustomData = $"{tyreChar};{_currentTyres.WearPercentage};{_fuelAmount}";
     _saveStateCooldown = SAVE_STATE_COOLDOWN;
 }
 
@@ -1284,40 +1257,6 @@ private Color GetCurrentFlagColor()
     }
 
     return color;
-}
-
-private string BuildErsBar()
-{
-    const int barLength = 6;
-    var arrow = _isErsActive
-        ? ARROW_DOWN_CHAR
-        : _ersCharge < 1
-            ? ARROW_UP_CHAR
-            : '-';
-
-    var ersBar = arrow + "E:";
-
-    for (int i = 0; i < barLength; i++)
-    {
-        var factor = 1f / barLength;
-
-        if (_ersCharge > factor * i)
-        {
-            if (_ersCharge < factor * (i + 1))
-            {
-                ersBar += BLOCK_HALF_CHAR;
-                continue;
-            }
-
-            ersBar += BLOCK_FILLED_CHAR;
-        }
-        else
-        {
-            ersBar += BLOCK_EMPTY_CHAR;
-        }
-    }
-
-    return ersBar;
 }
 
 private string[] BuildVerticalBar(char title, int length, float currentValue, float maxValue)
@@ -1372,12 +1311,7 @@ private float GetWheelPower()
         return 20f;
     }
 
-    if (_isDrafting || _isErsActive)
-    {
-        return 100f;
-    }
-
-    return DEFAULT_SUSPENSION_POWER;
+    return _CurrentClass.GetPower(_fuelAmount, _isDrafting);
 }
 
 private float GetWheelSpeedLimit()
@@ -1392,17 +1326,7 @@ private float GetWheelSpeedLimit()
         return 45;
     }
 
-    if (_isDrafting)
-    {
-        return 999;
-    }
-
-    if (_isErsActive)
-    {
-        return 97f;
-    }
-
-    return DEFAULT_SUSPENSION_SPEED_LIMIT;
+    return _CurrentClass.DefaultSpeedLimit;
 }
 
 private IMyMotorSuspension GetSuspension(SuspensionPosition pos)
@@ -1418,19 +1342,6 @@ private void SetSuspension(SuspensionPosition pos, IMyMotorSuspension suspension
     }
 
     _suspensions[(int)pos] = suspension;
-}
-
-private void SetPropulsionOverride(float value)
-{
-    var susFl = GetSuspension(SuspensionPosition.FrontLeft);
-    var susFr = GetSuspension(SuspensionPosition.FrontRight);
-    var susRl = GetSuspension(SuspensionPosition.RearLeft);
-    var susRr = GetSuspension(SuspensionPosition.RearRight);
-
-    susFl.PropulsionOverride = value;
-    susFr.PropulsionOverride = -value;
-    susRl.PropulsionOverride = value;
-    susRr.PropulsionOverride = -value;
 }
 
 private float GetMirrorProximity(IMySensorBlock mirrorSensor)
@@ -1520,6 +1431,15 @@ private string CentralizeString(string text, int width)
     strBuilder.Append(' ', rightSide);
 
     return strBuilder.ToString();
+}
+
+private float GoToValue (float originalValue, float desiredValue, float delta) {
+    if (originalValue > desiredValue) {
+        return (originalValue - delta <= desiredValue) ? desiredValue : originalValue - delta;
+    } else if (originalValue < desiredValue) {
+        return (originalValue + delta >= desiredValue) ? desiredValue : originalValue + delta;
+    }
+    return desiredValue;
 }
 private class CharacterAnimation
 {
@@ -1996,4 +1916,58 @@ private enum WeatherLevel
     Drizzle = 1,
     Rain = 2,
     HeavyRain = 3
+}
+
+private class RacingClass
+{
+    public string ClassTag { get; private set; }
+	public float FullFuelPower { private get; set; }
+	public float FullFuelDraftingPower { private get; set; }
+	public float EmptyPowerChange { private get; set; }
+    public float DefaultSpeedLimit { get; private set; }
+    public float MinDraftingSpeedLimit { private get; set; }
+	public float MaxDraftingSpeedLimit { private get; set; }
+
+    private RacingClass(string classTag, float fullFuelPower, float fullFuelDraftingPower, float emptyPowerChange, float defaultSpeedLimit, float minDraftingSpeedLimit, float maxDraftingSpeedLimit) 
+    {
+        ClassTag = classTag;
+		FullFuelPower = fullFuelPower;
+		FullFuelDraftingPower = fullFuelDraftingPower;
+		EmptyPowerChange = emptyPowerChange;
+        DefaultSpeedLimit = defaultSpeedLimit;
+        MinDraftingSpeedLimit = minDraftingSpeedLimit;
+		MaxDraftingSpeedLimit = maxDraftingSpeedLimit;
+    }
+
+    public static RacingClass Experimental() {
+        return new RacingClass("EX", 100f, 100f, 1f, 100f, 100f, 100f);
+    }
+
+    public static RacingClass Prototype() {
+        return new RacingClass("PR", 72.8f, 91f, 1.1f, 95f, 97f, 100f);
+    }
+
+    public static RacingClass GT() {
+        return new RacingClass("GT", 54.6f, 72.8f, 1.1f, 85f, 87f, 92f);
+    }
+
+    public static RacingClass Touring() {
+        return new RacingClass("TC", 45.45f, 63.64f, 1.2f, 75f, 77f, 82f);
+    }
+	
+	public float GetPower(float currentFuel, bool isDrafting) {
+		float y1 = (isDrafting) ? FullFuelDraftingPower : FullFuelPower;
+		float y2 = y1 * EmptyPowerChange;
+		
+		return y1 + ( (currentFuel - 1) / (0 - 1) ) * (y2 - y1);
+	}
+	
+	public float GetDraftingSpeed(float currentDistance) {
+		float y1 = MaxDraftingSpeedLimit;
+        float y2 = MinDraftingSpeedLimit;
+        float x1 = 0f;
+        float x2 = 60f;
+
+        return y1 + (currentDistance + x1) * ( (y2 - y1) / (x2 - x1) );
+	}
 }
