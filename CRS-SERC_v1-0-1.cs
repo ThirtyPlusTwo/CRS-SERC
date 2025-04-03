@@ -30,7 +30,7 @@ private const string RANK_DISPLAY_HUDLCDV2 = "hudlcd1 0.45x0.9 @1 #white monospa
     
 //************ DO NOT MODIFY BELOW HERE ************
 
-private readonly string CODE_VERSION = "1.0.0";
+private readonly string CODE_VERSION = "1.0.1";
 private const int CONNECTION_TIMEOUT = 3000;
 private const int SAVE_STATE_COOLDOWN = 1000;
 private const int DRAFTING_COOLDOWN = 3000;
@@ -176,20 +176,35 @@ private void SetupThrusters() {
         return;
     }
 
+    _mainController.ControlThrusters = true;
+
     _thrusters = new IMyThrust[thrusters.Count];
     bool isError = false;
-    for (int i = 0; i < thrusters.Count; i++) {
-        if (thrusters[i].Orientation.Forward != VRageMath.Base6Directions.Direction.Up) {
-            isError = true;
-            break;
-        }
-        thrusters[i].Enabled = true;
-        _thrusters[i] = (IMyThrust)thrusters[i];
-    }
+	double dpCheck = 0;
+	for (int i = 0; i < thrusters.Count; i++) {
+		dpCheck = VRageMath.Vector3D.Dot(
+            VRageMath.Vector3D.Normalize(_mainController.WorldMatrix.Up), 
+            VRageMath.Vector3D.Normalize(thrusters[i].WorldMatrix.Forward)
+        );
+		
+		if (dpCheck < 0.999 || dpCheck > 1.001) {
+			isError = true;
+			break;
+		}
+		
+		thrusters[i].Enabled = true;
+		_thrusters[i] = (IMyThrust)thrusters[i];
+	}
 
     if (isError) {
         throw new Exception("A thruster is in the incorrect orientation.");
     }
+	
+	float thrustPerThruster = _maximumThrust / _thrusters.Length;
+	for (int i = 0; i < _thrusters.Length; i++) {
+		_thrusters[i].Enabled = true;
+		_thrusters[i].ThrustOverride = thrustPerThruster;
+	}
 }
 
 public void Main(string argument, UpdateType updateSource)
@@ -205,9 +220,9 @@ public void Main(string argument, UpdateType updateSource)
     Echo($"Running CRS-SERC v{CODE_VERSION}");
     Echo($"Current Class: {_CurrentClass.ClassTag}");
     Echo($"Number of Thrusters: {_thrusters.Length}");
-    if (_thrusters.Length > 1) {
+    if (_thrusters.Length > 0) {
         Echo($"Thrust per Thruster: {Math.Round((_maximumThrust * 0.001f) / _thrusters.Length, 2)}kN");
-    }
+    }	
     Echo($"\n{DetermineCOMPlacement()}");
 
     HandleArgument(argument);
@@ -270,8 +285,10 @@ private void UpdateThrusters() {
 
     float carSpeed = (float)_mainController.GetShipSpeed();
     float thrustPerThruster = _maximumThrust / _thrusters.Length;
+	bool thrusterSpeedCheck = carSpeed > _minimumThrusterEnableSpeed;
+	
     for (int i = 0; i < _thrusters.Length; i++) {
-        _thrusters[i].ThrustOverride = (carSpeed < _minimumThrusterEnableSpeed) ? 0f : thrustPerThruster;
+        _thrusters[i].ThrustOverride = (thrusterSpeedCheck) ? thrustPerThruster : 0f;
     }
 }
 
