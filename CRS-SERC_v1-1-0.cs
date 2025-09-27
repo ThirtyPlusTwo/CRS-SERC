@@ -1,10 +1,9 @@
-private readonly string CLASS_TAG = "PR";                               //EX, PR, or GT
+private readonly string TEAM_TAG = "XXX";                               //Three character tag for the team
 private readonly string DRIVER_NAME = "Guest";                          //Your name
 private readonly int DRIVER_NUMBER = 99;                                //Your number (0-99)
 private const float DEFAULT_SUSPENSION_STRENGTH_F = 20f;                //Setup your default front suspensions strength (does nothing if zero) 0 < x < 25
 private const float DEFAULT_SUSPENSION_STRENGTH_R = 20f;                //Setup your default rear suspensions strength (does nothing if zero) 0 < x < 25
 
-// For PR & EX, the rear angle is enabled and unlimited, for GT, the front angle is limited 0 < x < 36 and no rear steering
 private const bool DO_FRONT_ANGLE_CHANGE = false;
 private const float DEFAULT_FRONT_ANGLE = 36f;
 private const float HS_FRONT_ANGLE = 34f;
@@ -12,7 +11,6 @@ private const float DEFAULT_TO_HS_CHANGE_SPEED = 80f;
 
 private const float ANTI_CLANG_FRICTION = 10f;                          //Limited between 0 and 20
 
-private const string DISPLAY_NAME = "Driver LCD";
 private const string BRAKELIGHT_GROUP_NAME = "Brakelight";
 private const string DRAFTING_SENSOR_NAME = "Drafting Sensor";
 private const string MIRROR_SENSOR_RIGHT_NAME = "Mirror Sensor Right";
@@ -22,7 +20,7 @@ private readonly Color DEFAULT_FONT_COLOR = new Color(255, 255, 255);   //Font C
 
 private const string TEXT_DISPLAY_NAME = "Text LCD";                    //Optional Text-Based LCD, for HudLcd Plugin
 private const string RANK_DISPLAY_NAME = "Rank LCD";                    //Optional Text-Based LCD, for HudLcd Plugin
-private const bool USING_HUDLCDV1 = true;
+private const bool USING_HUDLCDV1 = false;
 private const string TEXT_DISPLAY_HUDLCD = "hudlcd:-0.7:-0.35:0.9:White:1";
 private const string RANK_DISPLAY_HUDLCD = "hudlcd:0.45:0.9:1:White:1";
 private const string TEXT_DISPLAY_HUDLCDV2 = "hudlcd -0.7x-0.35 @0.9 #white monospace";
@@ -30,7 +28,7 @@ private const string RANK_DISPLAY_HUDLCDV2 = "hudlcd1 0.45x0.9 @1 #white monospa
     
 //************ DO NOT MODIFY BELOW HERE ************
 
-private readonly string CODE_VERSION = "1.0.1";
+private readonly string CODE_VERSION = "1.1.0";
 private const int CONNECTION_TIMEOUT = 3000;
 private const int SAVE_STATE_COOLDOWN = 1000;
 private const int DRAFTING_COOLDOWN = 3000;
@@ -53,7 +51,6 @@ private IMyRadioAntenna _antenna;
 private IMySensorBlock _draftingSensor;
 private IMySensorBlock _mirrorRight;
 private IMySensorBlock _mirrorLeft;
-private List<IMyGyro> _gyros;
 private bool _isPitLimiterActive;
 private StringBuilder _stringBuilder;
 private RaceData _data;
@@ -73,9 +70,15 @@ private bool _isRefueling = false;
 private bool _isDrafting = false;
 private bool _isAntiClangActive = false;
 private int _draftingCooldown;
+private float _currentBrakeTemp = 0f;
+private float _currentBrakeDelayTime = 0f;
+private float _brakingElapsedTime = 0f;
+private float[][] _brakeTimesTemp = {
+    new float[] {0f, 60f, 100f, 550f, 590f}, // x-axis: temperature
+    new float[] {0.9f, 0.9f, 0.75f, 0.75f, 0.98f}     // y-axis: delay time
+};
 private float _maximumThrust = 128000f;
 private float _minimumThrusterEnableSpeed = 10f;
-private bool _doFlip;
 private RacingClass _CurrentClass;
 private List<MyDetectedEntityInfo> _mirrorAuxList;
 private List<MyDetectedEntityInfo> _draftingAuxList;
@@ -96,12 +99,12 @@ public Program()
         SetupThrusters();
         SetupDisplays();
         SetupBrakelights();
+        SetupBrakes();
         SetupAntenna();
         SetupMirrors();
         LoadState();
         SetupBroadcastListener();
         SetupDraftingSensor();
-        SetupGyros();
     }
     catch (Exception ex)
     {
@@ -115,22 +118,7 @@ public Program()
 }
 
 private void SetupClass() {
-    var classTag = CLASS_TAG.ToUpper().Trim();
-
-    switch (classTag) {
-        case "PR":
-            _CurrentClass = RacingClass.Prototype();
-            break;
-        case "GT":
-            _CurrentClass = RacingClass.GT();
-            break;
-        case "TC":
-            _CurrentClass = RacingClass.Touring();
-            break;
-        default:
-            _CurrentClass = RacingClass.Experimental();
-            break;
-    }
+    _CurrentClass = RacingClass.TruckRacing();
 }
 
 private void SetupMirrors()
@@ -233,10 +221,10 @@ public void Main(string argument, UpdateType updateSource)
     UpdateTyreDegradation();
     UpdateAntiClang();
     UpdateFuel();
+    UpdateBrakes();
     UpdateCommunication();
     UpdateDisplays();
     UpdateAntenna();
-    UpdateGyros();
     UpdateThrusters();
 
     _lastTimeStamp = currentTimeStamp;
@@ -314,6 +302,62 @@ private void UpdateFuel() {
 	}
 }
 
+private void UpdateBrakes() {
+    var fr = GetSuspension(SuspensionPosition.FrontRight);
+    var fl = GetSuspension(SuspensionPosition.FrontLeft);
+    var rr = GetSuspension(SuspensionPosition.RearRight);
+    var rl = GetSuspension(SuspensionPosition.RearLeft);
+
+    var carSpeed = (float)_mainController.GetShipSpeed();
+    if (carSpeed < 1f) {
+        fr.Brake = true;
+        fl.Brake = false;
+        rr.Brake = true;
+        rl.Brake = false;
+        
+        _currentBrakeTemp -= _delta * 0.003f * _currentBrakeTemp;
+        _currentBrakeTemp = (float)MathHelper.Clamp(_currentBrakeTemp, 0f, 100000f);
+        return;
+    }
+
+    var throttle = -_mainController.MoveIndicator.Z;  // W / S; negated to be more intuitive: + forward (W), - backward (S)
+    var yDirection = _mainController.MoveIndicator.Y; // Space / C (or Ctrl)
+
+    _currentBrakeDelayTime = RangedInterpolation2D(_currentBrakeTemp, _brakeTimesTemp[0], _brakeTimesTemp[1]);
+
+    bool isBraking = throttle < 0f || Math.Abs(yDirection) > 0f;
+
+    _currentBrakeTemp += (isBraking) ? (_delta * 100f) - (_currentBrakeTemp * 0.0018f) : -_delta * (carSpeed * 0.025f) * (_currentBrakeTemp * 0.01f);
+    _currentBrakeTemp = (float)MathHelper.Clamp(_currentBrakeTemp, 0f, 100000f);
+    
+    float brakingCycleTime = 1f;
+    _brakingElapsedTime = (_brakingElapsedTime > brakingCycleTime) ? 0f : _brakingElapsedTime + _delta;
+    float onTime = (float)Math.Max(0f, brakingCycleTime - _currentBrakeDelayTime);
+
+    fr.Brake = !fr.Brake;
+    fl.Brake = !fl.Brake;
+    rr.Brake = !rr.Brake;
+    rl.Brake = !rl.Brake;
+
+    if (fr.Brake && fl.Brake && rr.Brake && rl.Brake) {
+        fr.Brake = true;
+        fl.Brake = false;
+        rr.Brake = true;
+        rl.Brake = false;
+    }
+
+    if (_brakingElapsedTime > onTime) {
+        fr.Brake = false;
+        fl.Brake = false;
+        rr.Brake = false;
+        rl.Brake = false;
+    }
+}
+
+private string CreateBrakeString() {
+    return $"T: {string.Format("{0,5}", _currentBrakeTemp.ToString("00000"))} °C";
+}
+
 private void UpdateAntiClang() {
     if (!_isAntiClangActive) { return; }
 
@@ -348,35 +392,6 @@ private void UpdateAngles() {
     rl.Steering = false;
 }
 
-private void UpdateGyros()
-{
-    if (!_doFlip)
-    {
-        return;
-    }
-
-    // The dot product is only positive when the car is flipped over
-    if (Vector3D.Dot(_mainController.GetNaturalGravity(), _mainController.WorldMatrix.Up) > 0)
-    {
-        for (int i = 0; i < _gyros.Count; i++)
-        {
-            _gyros[i].GyroOverride = true;
-        }
-
-        return;
-    }
-
-    // Simply disables gyro override if it's on
-    if (_gyros[0].GyroOverride)
-    {
-        for (int i = 0; i < _gyros.Count; i++)
-        {
-            _gyros[i].GyroOverride = false;
-        }
-
-        _doFlip = false;
-    }
-}
 
 private void UpdateFlagEffect()
 {
@@ -461,7 +476,7 @@ private void UpdateDisplays()
     const int INNER_DISPLAY_WIDTH = DISPLAY_WIDTH - 6;
     var speed = _mainController.GetShipSpeed();
     var tyreCompoundIndicator = _currentTyres.Symbol;
-    var strSpeed = $"{Math.Floor(speed)}m/s";
+    var strSpeed = $"{Math.Floor(speed).ToString("000")}m/s";
     var fuelBar = BuildVerticalBar('F', 8, _fuelAmount, 1);
     var tyreBar = BuildVerticalBar(tyreCompoundIndicator, 8, _currentTyres.WearPercentage, 1);
     var strWeather = $"<{Weather.GetWeatherDescription(_data.CurrentWeather)}>".ToUpper();
@@ -472,12 +487,12 @@ private void UpdateDisplays()
         (_isAntiClangActive ? "CLG" : "   ") + " " +
         (_isDrafting ? "DFT" : "   ") + " " +
         (_isPitLimiterActive ? "PIT" : "   ");
+    
+    var brakeTempLine = CreateBrakeString();
 
     var rightProximity = GetMirrorProximityArrows(true);
     var leftProximity = GetMirrorProximityArrows(false);
-    var innerLine = leftProximity.PadRight((int)Math.Ceiling((float)INNER_DISPLAY_WIDTH / 2) - (int)Math.Ceiling((float)strSpeed.Length / 2))
-        + strSpeed +
-        rightProximity.PadLeft((int)Math.Floor((float)INNER_DISPLAY_WIDTH / 2) - (int)Math.Floor((float)strSpeed.Length / 2));
+    var innerLine = $"{strSpeed} T:{string.Format("{0,4}", _currentBrakeTemp.ToString("0000"))}°C";
 
     _spinnerAnim.Update(_delta);
 
@@ -507,183 +522,6 @@ private void UpdateDisplays()
     }
 
     var text = _stringBuilder.ToString();
-
-    if (USING_HUDLCDV1) {
-        foreach (var d in _displays)
-        {
-            var frame = d.DrawFrame();
-            var bgColor = Color.Black;
-            var fontColor = DEFAULT_FONT_COLOR;
-
-            switch (_data.CurrentFlag)
-            {
-                case Flag.Yellow:
-                    bgColor = Color.Yellow;
-                    fontColor = Color.Black;
-                    break;
-
-                case Flag.Red:
-                    bgColor = Color.Red;
-                    fontColor = Color.White;
-                    break;
-
-                case Flag.Blue:
-                    bgColor = Color.Blue;
-                    fontColor = Color.White;
-                    break;
-            }
-
-            d.BackgroundColor = bgColor;
-            d.ScriptBackgroundColor = bgColor;
-            d.FontColor = fontColor;
-
-            var scale = d.SurfaceSize.X / 256;
-            var textScale = scale * 0.6f;
-            var textSprite = MySprite.CreateText(text, "Monospace", fontColor, textScale);
-            textSprite.Position = new Vector2(128 * scale, 18 * scale);
-            frame.Add(textSprite);
-
-            var dots = MathHelper.Clamp(Math.Round(speed / (100f / 15)), 0, 100);
-
-            for (int i = 0; i < dots; i++)
-            {
-                var size = 8f * scale;
-                var spacing = 2f * scale;
-                var startAt = (d.SurfaceSize.X / 2) - ((15f * size + 14f * spacing) / 2) + size / 2;
-                var pos = new Vector2(startAt + (size + spacing) * i, size + spacing);
-                var dimensions = new Vector2(size);
-                var circle = MySprite.CreateSprite("Circle", pos, dimensions);
-
-                if (i < 5)
-                {
-                    circle.Color = Color.Lime;
-                }
-                else if (i < 10)
-                {
-                    circle.Color = Color.Red;
-                }
-                else
-                {
-                    circle.Color = Color.Blue;
-                }
-
-                frame.Add(circle);
-            }
-
-            //Tyre Bar
-            var icon = MySprite.CreateSprite("Circle", new Vector2(22, 12 + 8 + 4), new Vector2(22));
-            icon.Color = _currentTyres.Color;
-
-            var inner = MySprite.CreateSprite("Circle", new Vector2(22, 12 + 8 + 4), new Vector2(20));
-            inner.Color = Color.Black;
-
-            var tyreSymbol = MySprite.CreateText(_currentTyres.Symbol.ToString(), "DEBUG", Color.White, 0.5f * scale);
-            tyreSymbol.Position = new Vector2(22, 12 + 4);
-
-            var fillBg = MySprite.CreateSprite("SquareSimple", new Vector2(22, 106), new Vector2(18, 128));
-            fillBg.Color = new Color(32, 32, 32);
-
-            var totalHeight = fillBg.Size.GetValueOrDefault().Y;
-            var height = totalHeight * _currentTyres.WearPercentage;
-
-            var fill = MySprite.CreateSprite("SquareSimple", new Vector2(22, 42 + (totalHeight - height / 2)), new Vector2(18, height));
-            fill.Color = _currentTyres.Color;
-
-            var percText = MySprite.CreateText($"{Math.Floor(_currentTyres.WearPercentage * 100)}%", "DEBUG", Color.White, textScale);
-            percText.Position = new Vector2(22, 176);
-
-            icon.Position *= scale;
-            icon.Size *= scale;
-            frame.Add(icon);
-
-            inner.Position *= scale;
-            inner.Size *= scale;
-            frame.Add(inner);
-
-            tyreSymbol.Position *= scale;
-            tyreSymbol.Size *= scale;
-            frame.Add(tyreSymbol);
-
-            fillBg.Position *= scale;
-            fillBg.Size *= scale;
-            frame.Add(fillBg);
-
-            fill.Position *= scale;
-            fill.Size *= scale;
-            frame.Add(fill);
-
-            percText.Position *= scale;
-            percText.Size *= scale;
-            frame.Add(percText);
-
-            //Fuel Bar
-            icon = MySprite.CreateSprite("IconHydrogen", new Vector2(256 - 22, 12 + 8 + 4), new Vector2(24));
-            icon.Color = new Color(250, 200, 85);
-
-            fillBg = MySprite.CreateSprite("SquareSimple", new Vector2(256 - 22, 106), new Vector2(18, 128));
-            fillBg.Color = new Color(32, 32, 32);
-
-            totalHeight = fillBg.Size.GetValueOrDefault().Y;
-            height = totalHeight * _fuelAmount;
-
-            fill = MySprite.CreateSprite("SquareSimple", new Vector2(256 - 22, 42 + (totalHeight - height / 2)), new Vector2(18, height));
-            fill.Color = new Color(250, 200, 85);
-
-            percText = MySprite.CreateText($"{Math.Floor(_fuelAmount * 100)}%", "DEBUG", Color.White, textScale);
-            percText.Position = new Vector2(256 - 22, 176);
-
-            icon.Position *= scale;
-            icon.Size *= scale;
-            frame.Add(icon);
-
-            fillBg.Position *= scale;
-            fillBg.Size *= scale;
-            frame.Add(fillBg);
-
-            fill.Position *= scale;
-            fill.Size *= scale;
-            frame.Add(fill);
-
-            percText.Position *= scale;
-            percText.Size *= scale;
-            frame.Add(percText);
-
-            //Sectors
-            var textS1 = MySprite.CreateText($"{strS1}", "Monospace", GetSectorStatusColor(_data.StatusS1), 0.6f);
-            textS1.Position = new Vector2(128 - 64 + 4 + 1, 128 - 4 - 2);
-
-            var textS2 = MySprite.CreateText($"{strS2}", "Monospace", GetSectorStatusColor(_data.StatusS2), 0.6f);
-            textS2.Position = new Vector2(128, 128 - 4 - 2);
-
-            var textS3 = MySprite.CreateText($"{strS3}", "Monospace", GetSectorStatusColor(_data.StatusS3), 0.6f);
-            textS3.Position = new Vector2(128 + 64 - 4 - 2, 128 - 4 - 2);
-
-            textS1.Position *= scale;
-            textS1.Size *= scale;
-            frame.Add(textS1);
-
-            textS2.Position *= scale;
-            textS2.Size *= scale;
-            frame.Add(textS2);
-
-            textS3.Position *= scale;
-            textS3.Size *= scale;
-            frame.Add(textS3);
-
-            for (int l = -3; l <= 3; l++)
-            {
-                var character = (int)_data.CurrentWeather != l ? "■" : "█";
-                var t = MySprite.CreateText(character, "Monospace", Weather.GetWeatherColor((WeatherLevel)l), 0.6f);
-                t.Position = new Vector2(128 - 64 + 32 - 5 + (l + 3) * 12, 128 + 11);
-
-                t.Position *= scale;
-                t.Size *= scale;
-                frame.Add(t);
-            }
-
-            frame.Dispose();
-        }
-    }
 
     _stringBuilder.Clear();
     lines[6] = $"    {strS1}  {strS2}  {strS3}    ";
@@ -835,13 +673,13 @@ private void SetupGridName()
         throw new Exception("DRIVER_NUMBER should be between 1 and 99");
     }
 
-    var classTag = _CurrentClass.ClassTag;
+    var teamTag = TEAM_TAG;
 
-    classTag = classTag.Trim()
-        .Substring(0, 2)
+    teamTag = teamTag.Trim()
+        .Substring(0, 3)
         .ToUpper();
 
-    Me.CubeGrid.CustomName = $"{classTag} #{DRIVER_NUMBER:00}-{DRIVER_NAME.Trim()}";
+    Me.CubeGrid.CustomName = $"{teamTag} #{DRIVER_NUMBER:00}-{DRIVER_NAME.Trim()}";
 }
 
 private void SetupController()
@@ -926,13 +764,6 @@ private void SetupDisplays()
 {
     _stringBuilder = new StringBuilder();
     _displays = new List<IMyTextSurface> { Me.GetSurface(0) };
-
-    var display = (IMyTextSurface)GridTerminalSystem.GetBlockWithName(DISPLAY_NAME);
-
-    if (display != null)
-    {
-        _displays.Add(display);
-    }
 
     foreach (var d in _displays)
     {
@@ -1029,6 +860,18 @@ private void SetupBrakelights()
     }
 }
 
+private void SetupBrakes() {
+    var fl = GetSuspension(SuspensionPosition.FrontLeft);
+    var fr = GetSuspension(SuspensionPosition.FrontRight);
+    var rl = GetSuspension(SuspensionPosition.RearLeft);
+    var rr = GetSuspension(SuspensionPosition.RearRight);
+
+    fl.Brake = true;
+    fr.Brake = false;
+    rl.Brake = true;
+    rr.Brake = false;
+}
+
 private void SetupDraftingSensor()
 {
     var sensor = GridTerminalSystem.GetBlockWithName(DRAFTING_SENSOR_NAME) as IMySensorBlock;
@@ -1056,20 +899,6 @@ private void SetupDraftingSensor()
     _draftingAuxList = new List<MyDetectedEntityInfo>();
 }
 
-private void SetupGyros()
-{
-    var gyros = new List<IMyGyro>();
-
-    GridTerminalSystem.GetBlocksOfType(gyros, x => x.CubeGrid == Me.CubeGrid);
-
-    if (gyros.Count <= 0)
-    {
-        throw new Exception("No gyroscope found.");
-    }
-
-    _gyros = gyros;
-}
-
 private void LoadState()
 {
     if (string.IsNullOrWhiteSpace(Me.CustomData))
@@ -1081,7 +910,7 @@ private void LoadState()
     string baseSavedState = Me.CustomData.Split('\n')[0];
     string[] values = baseSavedState.Split(';');
 
-    if (values.Length < 3)
+    if (values.Length < 4)
     {
         SetTyres(TyreCompound.Soft);
         return;
@@ -1090,9 +919,11 @@ private void LoadState()
     var compoundChar = Convert.ToChar(values[0]);
     var wearPercentage = (float)Convert.ToDouble(values[1]);
     var fuel = (float)Convert.ToDouble(values[2]);
+    var brakeTemp = (float)Convert.ToDouble(values[3]);
 
     _currentTyres = Tyre.Load(compoundChar, wearPercentage);
     _fuelAmount = fuel;
+    _currentBrakeTemp = brakeTemp;
 }
 
 private void SetupAntenna()
@@ -1186,12 +1017,6 @@ private void HandleArgument(string argument)
     if (argument.Equals("WET", StringComparison.InvariantCultureIgnoreCase))
     {
         ChangeTyres(TyreCompound.Wet);
-        return;
-    }
-
-    if (argument.Equals("FLIP", StringComparison.InvariantCultureIgnoreCase))
-    {
-        _doFlip = true;
         return;
     }
 
@@ -1322,7 +1147,7 @@ private void SaveState(bool force = false)
 
     var tyreChar = _currentTyres.Symbol;
 
-    Me.CustomData = $"{tyreChar};{_currentTyres.WearPercentage};{_fuelAmount}\n";
+    Me.CustomData = $"{tyreChar};{_currentTyres.WearPercentage};{_fuelAmount};{_currentBrakeTemp}\n";
     if (!USING_HUDLCDV1) {
         Me.CustomData += $"{TEXT_DISPLAY_HUDLCDV2}\n{RANK_DISPLAY_HUDLCDV2}";
     }
@@ -1541,6 +1366,36 @@ private float GoToValue (float originalValue, float desiredValue, float delta) {
     }
     return desiredValue;
 }
+
+private float RangedInterpolation2D(float dependentValue, float[] dependentBounds, float[] independentValues) {
+    int[] axisIndexes = DetermineAxisIndexes(dependentValue, dependentBounds);
+
+    int lowerIndex = axisIndexes[0];
+    int upperIndex = axisIndexes[1];
+
+    if (lowerIndex == upperIndex) { return independentValues[lowerIndex]; }
+
+    float slope = (independentValues[upperIndex] - independentValues[lowerIndex]) / (dependentBounds[upperIndex] - dependentBounds[lowerIndex]);
+    slope = (float.IsNaN(slope) || float.IsInfinity(slope)) ? 0f : slope;
+    float intercept = independentValues[lowerIndex] - slope * dependentBounds[lowerIndex];
+    return slope * dependentValue + intercept; // y = m*x + b
+}
+
+private int[] DetermineAxisIndexes(float axisCoordinate, float[] axisCoordinates) {
+    int maxAxisBound = axisCoordinates.Length - 1;
+
+    if (axisCoordinate < axisCoordinates[0]) { return new int[] {0, 0}; }
+    if (axisCoordinate > axisCoordinates[maxAxisBound]) { return new int[] {maxAxisBound, maxAxisBound}; }
+
+    for (int i = 0; i < maxAxisBound; i++) {
+        if (axisCoordinate > axisCoordinates[i + 1]) { continue; }
+
+        return new int[] {i, i + 1};
+    }
+
+    return new int[] {0, 0};
+}
+
 private class CharacterAnimation
 {
     private readonly char[] _frames;
@@ -2039,20 +1894,8 @@ private class RacingClass
 		MaxDraftingSpeedLimit = maxDraftingSpeedLimit;
     }
 
-    public static RacingClass Experimental() {
-        return new RacingClass("EX", 100f, 100f, 1f, 100f, 100f, 100f);
-    }
-
-    public static RacingClass Prototype() {
-        return new RacingClass("PR", 72.8f, 91f, 1.1f, 95f, 97f, 100f);
-    }
-
-    public static RacingClass GT() {
-        return new RacingClass("GT", 54.6f, 72.8f, 1.1f, 85f, 87f, 92f);
-    }
-
-    public static RacingClass Touring() {
-        return new RacingClass("TC", 45.45f, 63.64f, 1.2f, 75f, 77f, 82f);
+    public static RacingClass TruckRacing() {
+        return new RacingClass("ST", 50f, 68.2f, 1.1f, 85f, 87f, 92f);
     }
 	
 	public float GetPower(float currentFuel, bool isDrafting) {
